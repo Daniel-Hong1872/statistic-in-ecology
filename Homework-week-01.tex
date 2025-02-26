@@ -1,0 +1,554 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Homework week 01},
+  pdfauthor={Daniel},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Homework week 01}
+\author{Daniel}
+\date{2025-02-26}
+
+\begin{document}
+\maketitle
+
+\#read table
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{setwd}\NormalTok{(}\StringTok{"C:/Users/dan91/Rstudio/stat\_data/mock\_dataTS"}\NormalTok{)}
+\NormalTok{cop\_compo }\OtherTok{\textless{}{-}} \FunctionTok{read.table}\NormalTok{(}\StringTok{"Copepod\_composition.txt"}\NormalTok{, }\AttributeTok{header =}\NormalTok{ T)}
+\NormalTok{cop\_den }\OtherTok{\textless{}{-}} \FunctionTok{read.table}\NormalTok{(}\StringTok{"Cop\_density.txt"}\NormalTok{)}
+\NormalTok{cop\_sp }\OtherTok{\textless{}{-}} \FunctionTok{read.table}\NormalTok{(}\StringTok{"copepodSPlist.txt"}\NormalTok{, }\AttributeTok{fill =}\NormalTok{ T, }\AttributeTok{sep =} \StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{) }\CommentTok{\#separate by different row}
+\end{Highlighting}
+\end{Shaded}
+
+\section{1. Calculate the copepod density for each species for each
+cruise-station}\label{calculate-the-copepod-density-for-each-species-for-each-cruise-station}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{colnames}\NormalTok{(cop\_compo) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"1"}\NormalTok{, }\StringTok{"3"}\NormalTok{, }\StringTok{"4"}\NormalTok{, }\StringTok{"6"}\NormalTok{, }\StringTok{"13"}\NormalTok{, }\StringTok{"16"}\NormalTok{, }\StringTok{"19a"}\NormalTok{, }\StringTok{"21"}\NormalTok{, }\StringTok{"23a"}\NormalTok{, }\StringTok{"25a"}\NormalTok{, }\StringTok{"18"}\NormalTok{, }\StringTok{"19b"}\NormalTok{, }\StringTok{"20"}\NormalTok{, }\StringTok{"22a"}\NormalTok{, }\StringTok{"23b"}\NormalTok{, }\StringTok{"25b"}\NormalTok{, }\StringTok{"27a"}\NormalTok{, }\StringTok{"29a"}\NormalTok{, }\StringTok{"Aa"}\NormalTok{, }\StringTok{"Ba"}\NormalTok{, }\StringTok{"Ca"}\NormalTok{, }\StringTok{"Da"}\NormalTok{, }\StringTok{"E"}\NormalTok{, }\StringTok{"F"}\NormalTok{, }\StringTok{"G"}\NormalTok{, }\StringTok{"22b"}\NormalTok{, }\StringTok{"23c"}\NormalTok{, }\StringTok{"25c"}\NormalTok{, }\StringTok{"27b"}\NormalTok{, }\StringTok{"29b"}\NormalTok{, }\StringTok{"Ab"}\NormalTok{, }\StringTok{"Bb"}\NormalTok{, }\StringTok{"Cb"}\NormalTok{, }\StringTok{"Db"}\NormalTok{)}
+\FunctionTok{head}\NormalTok{(cop\_compo)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   1 3 4 6 13   16  19a 21  23a  25a   18  19b   20  22a  23b  25b  27a  29a
+## 1 0 0 0 0  0 0.00 0.00  0 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.30 0.00 0.00
+## 2 0 0 0 0  0 0.00 0.00  0 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00
+## 3 0 0 0 0  0 0.22 2.34  0 2.51 1.62 0.00 0.00 0.00 0.00 0.00 0.00 1.52 0.30
+## 4 0 0 0 0  0 0.00 0.00  0 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00
+## 5 0 0 0 0  0 0.00 0.00  0 0.00 0.00 4.07 1.56 1.08 4.83 8.49 1.49 0.00 0.00
+## 6 0 0 0 0  0 0.00 0.00  0 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.76 1.51
+##     Aa   Ba   Ca   Da    E    F   G   22b   23c  25c  27b  29b   Ab   Bb   Cb
+## 1 0.00 0.00 0.00 0.00 0.00 0.00 0.0  0.00  0.00 0.00 0.00 0.00 0.00 0.00 0.00
+## 2 0.00 0.00 0.00 0.00 0.00 0.00 0.0  0.00  0.00 0.00 0.00 0.42 0.00 0.00 0.00
+## 3 3.06 1.35 1.24 0.62 2.92 0.31 1.4  0.00  0.00 0.00 0.00 0.00 0.00 2.22 1.13
+## 4 0.26 0.00 0.00 0.00 0.00 0.00 0.0  0.00  0.00 0.00 0.00 0.00 0.00 0.00 0.00
+## 5 0.26 0.00 0.00 0.00 0.32 1.53 0.0 19.42 51.76 2.81 3.85 6.28 0.55 0.28 0.00
+## 6 0.00 0.00 0.00 0.00 0.00 0.00 0.0  0.00  0.00 0.00 0.00 0.00 0.00 0.00 0.00
+##     Db
+## 1 0.00
+## 2 0.00
+## 3 0.93
+## 4 0.00
+## 5 0.62
+## 6 0.00
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{rownames}\NormalTok{(cop\_den) }\OtherTok{\textless{}{-}} \FunctionTok{colnames}\NormalTok{(cop\_compo)}
+\FunctionTok{head}\NormalTok{(cop\_den)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      V1
+## 1  1119
+## 3  1153
+## 4  1719
+## 6   855
+## 13 1246
+## 16 2123
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#multiply proportion of composition and density}
+\NormalTok{sp\_den\_cr }\OtherTok{\textless{}{-}} \FunctionTok{matrix}\NormalTok{(}\DecValTok{0}\NormalTok{, }\AttributeTok{nrow =} \FunctionTok{length}\NormalTok{(cop\_sp}\SpecialCharTok{$}\NormalTok{V1), }\AttributeTok{ncol =} \FunctionTok{length}\NormalTok{(cop\_den}\SpecialCharTok{$}\NormalTok{V1))}
+\ControlFlowTok{for}\NormalTok{(i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(cop\_sp}\SpecialCharTok{$}\NormalTok{V1))\{}
+  \ControlFlowTok{for}\NormalTok{(j }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(cop\_den}\SpecialCharTok{$}\NormalTok{V1))\{}
+\NormalTok{    sp\_den\_cr[i, j] }\OtherTok{\textless{}{-}}\NormalTok{ cop\_compo[i, j]}\SpecialCharTok{/}\DecValTok{100} \SpecialCharTok{*}\NormalTok{ cop\_den[j,]}
+\NormalTok{  \}}
+\NormalTok{\}}
+\NormalTok{sp\_den\_cr.df }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(sp\_den\_cr)}
+\FunctionTok{colnames}\NormalTok{(sp\_den\_cr.df) }\OtherTok{\textless{}{-}} \FunctionTok{colnames}\NormalTok{(cop\_compo)}
+\FunctionTok{head}\NormalTok{(sp\_den\_cr.df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   1 3 4 6 13     16     19a 21     23a    25a       18   19b      20      22a
+## 1 0 0 0 0  0 0.0000  0.0000  0  0.0000  0.000   0.0000  0.00  0.0000   0.0000
+## 2 0 0 0 0  0 0.0000  0.0000  0  0.0000  0.000   0.0000  0.00  0.0000   0.0000
+## 3 0 0 0 0  0 4.6706 27.1206  0 33.9101 15.552   0.0000  0.00  0.0000   0.0000
+## 4 0 0 0 0  0 0.0000  0.0000  0  0.0000  0.000   0.0000  0.00  0.0000   0.0000
+## 5 0 0 0 0  0 0.0000  0.0000  0  0.0000  0.000 119.9022 29.64 16.2864 195.2769
+## 6 0 0 0 0  0 0.0000  0.0000  0  0.0000  0.000   0.0000  0.00  0.0000   0.0000
+##        23b     25b     27a     29a      Aa      Ba     Ca     Da        E
+## 1   0.0000 18.9960  0.0000  0.0000  0.0000  0.0000  0.000 0.0000   0.0000
+## 2   0.0000  0.0000  0.0000  0.0000  0.0000  0.0000  0.000 0.0000   0.0000
+## 3   0.0000  0.0000 31.9352 14.4690 48.5928 39.0825 47.988 8.3948 160.3664
+## 4   0.0000  0.0000  0.0000  0.0000  4.1288  0.0000  0.000 0.0000   0.0000
+## 5 417.6231 94.3468  0.0000  0.0000  4.1288  0.0000  0.000 0.0000  17.5744
+## 6   0.0000  0.0000 15.9676 72.8273  0.0000  0.0000  0.000 0.0000   0.0000
+##          F     G      22b      23c      25c     27b      29b      Ab      Bb
+## 1   0.0000  0.00  0.00000   0.0000 0.000000 0.00000 0.000000 0.00000 0.00000
+## 2   0.0000  0.00  0.00000   0.0000 0.000000 0.00000 0.175308 0.00000 0.00000
+## 3  24.5458 17.78  0.00000   0.0000 0.000000 0.00000 0.000000 0.00000 1.10334
+## 4   0.0000  0.00  0.00000   0.0000 0.000000 0.00000 0.000000 0.00000 0.00000
+## 5 121.1454  0.00 69.54302 135.4973 2.266827 1.77331 2.621272 0.05093 0.13916
+## 6   0.0000  0.00  0.00000   0.0000 0.000000 0.00000 0.000000 0.00000 0.00000
+##         Cb       Db
+## 1 0.000000 0.000000
+## 2 0.000000 0.000000
+## 3 0.290862 0.434031
+## 4 0.000000 0.000000
+## 5 0.000000 0.289354
+## 6 0.000000 0.000000
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#sum of the same station}
+\NormalTok{sp\_den\_cr.df}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{19a}\StringTok{\textasciigrave{}} \OtherTok{\textless{}{-}}\NormalTok{ sp\_den\_cr.df}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{19a}\StringTok{\textasciigrave{}} \SpecialCharTok{+}\NormalTok{ sp\_den\_cr.df}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{19b}\StringTok{\textasciigrave{}}
+
+\NormalTok{sp\_den\_cr.df}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{23a}\StringTok{\textasciigrave{}} \OtherTok{\textless{}{-}}\NormalTok{ sp\_den\_cr.df}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{23a}\StringTok{\textasciigrave{}} \SpecialCharTok{+}\NormalTok{ sp\_den\_cr.df}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{23b}\StringTok{\textasciigrave{}} \SpecialCharTok{+}\NormalTok{ sp\_den\_cr.df}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{23c}\StringTok{\textasciigrave{}}
+
+\NormalTok{sp\_den\_cr.df}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{25a}\StringTok{\textasciigrave{}} \OtherTok{\textless{}{-}}\NormalTok{ sp\_den\_cr.df}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{25a}\StringTok{\textasciigrave{}} \SpecialCharTok{+}\NormalTok{ sp\_den\_cr.df}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{25b}\StringTok{\textasciigrave{}} \SpecialCharTok{+}\NormalTok{ sp\_den\_cr.df}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{25c}\StringTok{\textasciigrave{}}
+
+\NormalTok{sp\_den\_cr.df}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{22a}\StringTok{\textasciigrave{}} \OtherTok{\textless{}{-}}\NormalTok{ sp\_den\_cr.df}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{22a}\StringTok{\textasciigrave{}} \SpecialCharTok{+}\NormalTok{ sp\_den\_cr.df}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{22b}\StringTok{\textasciigrave{}}
+
+\NormalTok{sp\_den\_cr.df}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{27a}\StringTok{\textasciigrave{}} \OtherTok{\textless{}{-}}\NormalTok{ sp\_den\_cr.df}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{27a}\StringTok{\textasciigrave{}} \SpecialCharTok{+}\NormalTok{ sp\_den\_cr.df}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{27b}\StringTok{\textasciigrave{}}
+
+\NormalTok{sp\_den\_cr.df}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{29a}\StringTok{\textasciigrave{}} \OtherTok{\textless{}{-}}\NormalTok{ sp\_den\_cr.df}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{29a}\StringTok{\textasciigrave{}} \SpecialCharTok{+}\NormalTok{ sp\_den\_cr.df}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{29b}\StringTok{\textasciigrave{}}
+
+\NormalTok{sp\_den\_cr.df}\SpecialCharTok{$}\NormalTok{Aa }\OtherTok{\textless{}{-}}\NormalTok{ sp\_den\_cr.df}\SpecialCharTok{$}\NormalTok{Aa }\SpecialCharTok{+}\NormalTok{ sp\_den\_cr.df}\SpecialCharTok{$}\NormalTok{Ab}
+
+\NormalTok{sp\_den\_cr.df}\SpecialCharTok{$}\NormalTok{Ba }\OtherTok{\textless{}{-}}\NormalTok{ sp\_den\_cr.df}\SpecialCharTok{$}\NormalTok{Ba }\SpecialCharTok{+}\NormalTok{ sp\_den\_cr.df}\SpecialCharTok{$}\NormalTok{Bb}
+
+\NormalTok{sp\_den\_cr.df}\SpecialCharTok{$}\NormalTok{Ca }\OtherTok{\textless{}{-}}\NormalTok{ sp\_den\_cr.df}\SpecialCharTok{$}\NormalTok{Ca }\SpecialCharTok{+}\NormalTok{ sp\_den\_cr.df}\SpecialCharTok{$}\NormalTok{Cb}
+
+\NormalTok{sp\_den\_cr.df}\SpecialCharTok{$}\NormalTok{Da }\OtherTok{\textless{}{-}}\NormalTok{ sp\_den\_cr.df}\SpecialCharTok{$}\NormalTok{Da }\SpecialCharTok{+}\NormalTok{ sp\_den\_cr.df}\SpecialCharTok{$}\NormalTok{Db}
+
+\NormalTok{sp\_den\_cr.df }\OtherTok{\textless{}{-}}\NormalTok{ sp\_den\_cr.df[, }\SpecialCharTok{{-}}\FunctionTok{c}\NormalTok{(}\DecValTok{12}\NormalTok{, }\DecValTok{15}\NormalTok{, }\DecValTok{16}\NormalTok{, }\DecValTok{26}\NormalTok{, }\DecValTok{27}\NormalTok{, }\DecValTok{28}\NormalTok{, }\DecValTok{29}\NormalTok{, }\DecValTok{30}\NormalTok{, }\DecValTok{31}\NormalTok{,}\DecValTok{32}\NormalTok{,}\DecValTok{33}\NormalTok{,}\DecValTok{34}\NormalTok{)]}
+\FunctionTok{colnames}\NormalTok{(sp\_den\_cr.df) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"1"}\NormalTok{, }\StringTok{"3"}\NormalTok{, }\StringTok{"4"}\NormalTok{, }\StringTok{"6"}\NormalTok{, }\StringTok{"13"}\NormalTok{, }\StringTok{"16"}\NormalTok{, }\StringTok{"19"}\NormalTok{, }\StringTok{"21"}\NormalTok{, }\StringTok{"23"}\NormalTok{, }\StringTok{"25"}\NormalTok{, }\StringTok{"18"}\NormalTok{, }\StringTok{"20"}\NormalTok{, }\StringTok{"22"}\NormalTok{, }\StringTok{"27"}\NormalTok{, }\StringTok{"29"}\NormalTok{, }\StringTok{"A"}\NormalTok{, }\StringTok{"B"}\NormalTok{, }\StringTok{"C"}\NormalTok{, }\StringTok{"D"}\NormalTok{, }\StringTok{"E"}\NormalTok{, }\StringTok{"F"}\NormalTok{, }\StringTok{"G"}\NormalTok{)}
+\FunctionTok{rownames}\NormalTok{(sp\_den\_cr.df) }\OtherTok{\textless{}{-}}\NormalTok{ cop\_sp}\SpecialCharTok{$}\NormalTok{V1}
+
+\CommentTok{\#species density at each cruise{-}station}
+\FunctionTok{head}\NormalTok{(sp\_den\_cr.df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                    1 3 4 6 13     16      19 21       23       25       18
+## Acartia bifilosa   0 0 0 0  0 0.0000  0.0000  0   0.0000 18.99600   0.0000
+## Acartia erythraea  0 0 0 0  0 0.0000  0.0000  0   0.0000  0.00000   0.0000
+## Acartia negligence 0 0 0 0  0 4.6706 27.1206  0  33.9101 15.55200   0.0000
+## Acartia omori      0 0 0 0  0 0.0000  0.0000  0   0.0000  0.00000   0.0000
+## Acartia pacifica   0 0 0 0  0 0.0000 29.6400  0 553.1204 96.61363 119.9022
+## Acartia sp         0 0 0 0  0 0.0000  0.0000  0   0.0000  0.00000   0.0000
+##                         20       22       27        29        A        B
+## Acartia bifilosa    0.0000   0.0000  0.00000  0.000000  0.00000  0.00000
+## Acartia erythraea   0.0000   0.0000  0.00000  0.175308  0.00000  0.00000
+## Acartia negligence  0.0000   0.0000 31.93520 14.469000 48.59280 40.18584
+## Acartia omori       0.0000   0.0000  0.00000  0.000000  4.12880  0.00000
+## Acartia pacifica   16.2864 264.8199  1.77331  2.621272  4.17973  0.13916
+## Acartia sp          0.0000   0.0000 15.96760 72.827300  0.00000  0.00000
+##                           C        D        E        F     G
+## Acartia bifilosa    0.00000 0.000000   0.0000   0.0000  0.00
+## Acartia erythraea   0.00000 0.000000   0.0000   0.0000  0.00
+## Acartia negligence 48.27886 8.828831 160.3664  24.5458 17.78
+## Acartia omori       0.00000 0.000000   0.0000   0.0000  0.00
+## Acartia pacifica    0.00000 0.289354  17.5744 121.1454  0.00
+## Acartia sp          0.00000 0.000000   0.0000   0.0000  0.00
+\end{verbatim}
+
+\section{2. For each cruise-station, calculate the species richness
+(number of species) and Shannon diversity
+index}\label{for-each-cruise-station-calculate-the-species-richness-number-of-species-and-shannon-diversity-index}
+
+\subsubsection{2(1). species richness}\label{species-richness}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sp\_rich }\OtherTok{\textless{}{-}} \FunctionTok{ifelse}\NormalTok{(sp\_den\_cr.df }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{) }
+\NormalTok{sp\_rich.df }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(sp\_rich)}
+
+\CommentTok{\#calculate species number at each cruise{-}station}
+\NormalTok{richness }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\FunctionTok{colSums}\NormalTok{(sp\_rich.df))}
+\NormalTok{richness}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    colSums.sp_rich.df.
+## 1                    6
+## 3                   12
+## 4                    8
+## 6                    9
+## 13                  31
+## 16                  29
+## 19                  65
+## 21                   7
+## 23                  66
+## 25                  68
+## 18                  39
+## 20                  32
+## 22                  33
+## 27                  60
+## 29                  39
+## A                   76
+## B                   83
+## C                   79
+## D                   72
+## E                   44
+## F                   38
+## G                   25
+\end{verbatim}
+
+\subsubsection{2(2). Shannon index}\label{shannon-index}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#species proportion at each cruise{-}station}
+\NormalTok{cop\_compo}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{19a}\StringTok{\textasciigrave{}} \OtherTok{\textless{}{-}}\NormalTok{ cop\_compo}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{19a}\StringTok{\textasciigrave{}} \SpecialCharTok{+}\NormalTok{ cop\_compo}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{19b}\StringTok{\textasciigrave{}}
+
+\NormalTok{cop\_compo}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{23a}\StringTok{\textasciigrave{}} \OtherTok{\textless{}{-}}\NormalTok{ cop\_compo}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{23a}\StringTok{\textasciigrave{}} \SpecialCharTok{+}\NormalTok{ cop\_compo}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{23b}\StringTok{\textasciigrave{}} \SpecialCharTok{+}\NormalTok{ cop\_compo}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{23c}\StringTok{\textasciigrave{}}
+
+\NormalTok{cop\_compo}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{25a}\StringTok{\textasciigrave{}} \OtherTok{\textless{}{-}}\NormalTok{ cop\_compo}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{25a}\StringTok{\textasciigrave{}} \SpecialCharTok{+}\NormalTok{ cop\_compo}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{25b}\StringTok{\textasciigrave{}} \SpecialCharTok{+}\NormalTok{ cop\_compo}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{25c}\StringTok{\textasciigrave{}}
+
+\NormalTok{cop\_compo}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{22a}\StringTok{\textasciigrave{}} \OtherTok{\textless{}{-}}\NormalTok{ cop\_compo}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{22a}\StringTok{\textasciigrave{}} \SpecialCharTok{+}\NormalTok{ cop\_compo}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{22b}\StringTok{\textasciigrave{}}
+
+\NormalTok{cop\_compo}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{27a}\StringTok{\textasciigrave{}} \OtherTok{\textless{}{-}}\NormalTok{ cop\_compo}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{27a}\StringTok{\textasciigrave{}} \SpecialCharTok{+}\NormalTok{ cop\_compo}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{27b}\StringTok{\textasciigrave{}}
+
+\NormalTok{cop\_compo}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{29a}\StringTok{\textasciigrave{}} \OtherTok{\textless{}{-}}\NormalTok{ cop\_compo}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{29a}\StringTok{\textasciigrave{}} \SpecialCharTok{+}\NormalTok{ cop\_compo}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{29b}\StringTok{\textasciigrave{}}
+
+\NormalTok{cop\_compo}\SpecialCharTok{$}\NormalTok{Aa }\OtherTok{\textless{}{-}}\NormalTok{ cop\_compo}\SpecialCharTok{$}\NormalTok{Aa }\SpecialCharTok{+}\NormalTok{ cop\_compo}\SpecialCharTok{$}\NormalTok{Ab}
+
+\NormalTok{cop\_compo}\SpecialCharTok{$}\NormalTok{Ba }\OtherTok{\textless{}{-}}\NormalTok{ cop\_compo}\SpecialCharTok{$}\NormalTok{Ba }\SpecialCharTok{+}\NormalTok{ cop\_compo}\SpecialCharTok{$}\NormalTok{Bb}
+
+\NormalTok{cop\_compo}\SpecialCharTok{$}\NormalTok{Ca }\OtherTok{\textless{}{-}}\NormalTok{ cop\_compo}\SpecialCharTok{$}\NormalTok{Ca }\SpecialCharTok{+}\NormalTok{ cop\_compo}\SpecialCharTok{$}\NormalTok{Cb}
+
+\NormalTok{cop\_compo}\SpecialCharTok{$}\NormalTok{Da }\OtherTok{\textless{}{-}}\NormalTok{ cop\_compo}\SpecialCharTok{$}\NormalTok{Da }\SpecialCharTok{+}\NormalTok{ cop\_compo}\SpecialCharTok{$}\NormalTok{Db}
+
+\NormalTok{cop\_compo }\OtherTok{\textless{}{-}}\NormalTok{ cop\_compo[, }\SpecialCharTok{{-}}\FunctionTok{c}\NormalTok{(}\DecValTok{12}\NormalTok{, }\DecValTok{15}\NormalTok{, }\DecValTok{16}\NormalTok{, }\DecValTok{26}\NormalTok{, }\DecValTok{27}\NormalTok{, }\DecValTok{28}\NormalTok{, }\DecValTok{29}\NormalTok{, }\DecValTok{30}\NormalTok{, }\DecValTok{31}\NormalTok{,}\DecValTok{32}\NormalTok{,}\DecValTok{33}\NormalTok{,}\DecValTok{34}\NormalTok{)]}
+\FunctionTok{colnames}\NormalTok{(cop\_compo) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"1"}\NormalTok{, }\StringTok{"3"}\NormalTok{, }\StringTok{"4"}\NormalTok{, }\StringTok{"6"}\NormalTok{, }\StringTok{"13"}\NormalTok{, }\StringTok{"16"}\NormalTok{, }\StringTok{"19"}\NormalTok{, }\StringTok{"21"}\NormalTok{, }\StringTok{"23"}\NormalTok{, }\StringTok{"25"}\NormalTok{, }\StringTok{"18"}\NormalTok{, }\StringTok{"20"}\NormalTok{, }\StringTok{"22"}\NormalTok{, }\StringTok{"27"}\NormalTok{, }\StringTok{"29"}\NormalTok{, }\StringTok{"A"}\NormalTok{, }\StringTok{"B"}\NormalTok{, }\StringTok{"C"}\NormalTok{, }\StringTok{"D"}\NormalTok{, }\StringTok{"E"}\NormalTok{, }\StringTok{"F"}\NormalTok{, }\StringTok{"G"}\NormalTok{)}
+\FunctionTok{rownames}\NormalTok{(cop\_compo) }\OtherTok{\textless{}{-}}\NormalTok{ cop\_sp}\SpecialCharTok{$}\NormalTok{V1}
+\FunctionTok{head}\NormalTok{(cop\_compo)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                    1 3 4 6 13   16   19 21    23   25   18   20    22   27   29
+## Acartia bifilosa   0 0 0 0  0 0.00 0.00  0  0.00 0.30 0.00 0.00  0.00 0.00 0.00
+## Acartia erythraea  0 0 0 0  0 0.00 0.00  0  0.00 0.00 0.00 0.00  0.00 0.00 0.42
+## Acartia negligence 0 0 0 0  0 0.22 2.34  0  2.51 1.62 0.00 0.00  0.00 1.52 0.30
+## Acartia omori      0 0 0 0  0 0.00 0.00  0  0.00 0.00 0.00 0.00  0.00 0.00 0.00
+## Acartia pacifica   0 0 0 0  0 0.00 1.56  0 60.25 4.30 4.07 1.08 24.25 3.85 6.28
+## Acartia sp         0 0 0 0  0 0.00 0.00  0  0.00 0.00 0.00 0.00  0.00 0.76 1.51
+##                       A    B    C    D    E    F   G
+## Acartia bifilosa   0.00 0.00 0.00 0.00 0.00 0.00 0.0
+## Acartia erythraea  0.00 0.00 0.00 0.00 0.00 0.00 0.0
+## Acartia negligence 3.06 3.57 2.37 1.55 2.92 0.31 1.4
+## Acartia omori      0.26 0.00 0.00 0.00 0.00 0.00 0.0
+## Acartia pacifica   0.81 0.28 0.00 0.62 0.32 1.53 0.0
+## Acartia sp         0.00 0.00 0.00 0.00 0.00 0.00 0.0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# calculate the index}
+\NormalTok{shannon\_index }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\SpecialCharTok{{-}}\FunctionTok{colSums}\NormalTok{(cop\_compo}\SpecialCharTok{/}\DecValTok{100} \SpecialCharTok{*} \FunctionTok{log}\NormalTok{(cop\_compo }\SpecialCharTok{/} \DecValTok{100}\NormalTok{), }\AttributeTok{na.rm =}\NormalTok{ T))}
+\FunctionTok{colnames}\NormalTok{(shannon\_index) }\OtherTok{\textless{}{-}} \StringTok{"Shannon index"}
+\NormalTok{shannon\_index}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    Shannon index
+## 1       1.080782
+## 3       1.256126
+## 4       1.045406
+## 6       1.114551
+## 13      2.144528
+## 16      1.413396
+## 19      4.595925
+## 21      1.566761
+## 23      5.902687
+## 25      5.414535
+## 18      2.841237
+## 20      2.568974
+## 22      4.003199
+## 27      4.900656
+## 29      3.988412
+## A       5.273402
+## B       5.252945
+## C       5.349971
+## D       5.261798
+## E       3.020831
+## F       2.890280
+## G       1.692271
+\end{verbatim}
+
+\section{3. For each of the dominant species (species \textgreater=5\%
+of total composition in any cruise-station regardless of the seasons),
+calculate the average density by
+seasons.}\label{for-each-of-the-dominant-species-species-5-of-total-composition-in-any-cruise-station-regardless-of-the-seasons-calculate-the-average-density-by-seasons.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{setwd}\NormalTok{(}\StringTok{"C:/Users/dan91/Rstudio/stat\_data/mock\_dataTS"}\NormalTok{)}
+\NormalTok{cop\_compo\_season }\OtherTok{\textless{}{-}} \FunctionTok{read.table}\NormalTok{(}\StringTok{"Copepod\_composition.txt"}\NormalTok{, }\AttributeTok{header =}\NormalTok{ T)}
+\NormalTok{sp\_den\_cr\_season }\OtherTok{\textless{}{-}} \FunctionTok{matrix}\NormalTok{(}\DecValTok{0}\NormalTok{, }\AttributeTok{nrow =} \FunctionTok{length}\NormalTok{(cop\_sp}\SpecialCharTok{$}\NormalTok{V1), }\AttributeTok{ncol =} \FunctionTok{length}\NormalTok{(cop\_den}\SpecialCharTok{$}\NormalTok{V1))}
+\ControlFlowTok{for}\NormalTok{(i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(cop\_sp}\SpecialCharTok{$}\NormalTok{V1))\{}
+  \ControlFlowTok{for}\NormalTok{(j }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(cop\_den}\SpecialCharTok{$}\NormalTok{V1))\{}
+\NormalTok{    sp\_den\_cr\_season[i, j] }\OtherTok{\textless{}{-}}\NormalTok{ cop\_compo\_season[i, j]}\SpecialCharTok{/}\DecValTok{100} \SpecialCharTok{*}\NormalTok{ cop\_den[j,]}
+\NormalTok{  \}}
+\NormalTok{\}}
+\NormalTok{sp\_den\_cr\_season.df }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(sp\_den\_cr\_season)}
+\FunctionTok{colnames}\NormalTok{(sp\_den\_cr\_season.df) }\OtherTok{\textless{}{-}} \FunctionTok{colnames}\NormalTok{(cop\_compo\_season)}
+\FunctionTok{head}\NormalTok{(sp\_den\_cr\_season.df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   X.p1 p3 p4 p6 p13    p16     p19 p21     p23    p25      s18   s19     s20
+## 1    0  0  0  0   0 0.0000  0.0000   0  0.0000  0.000   0.0000  0.00  0.0000
+## 2    0  0  0  0   0 0.0000  0.0000   0  0.0000  0.000   0.0000  0.00  0.0000
+## 3    0  0  0  0   0 4.6706 27.1206   0 33.9101 15.552   0.0000  0.00  0.0000
+## 4    0  0  0  0   0 0.0000  0.0000   0  0.0000  0.000   0.0000  0.00  0.0000
+## 5    0  0  0  0   0 0.0000  0.0000   0  0.0000  0.000 119.9022 29.64 16.2864
+## 6    0  0  0  0   0 0.0000  0.0000   0  0.0000  0.000   0.0000  0.00  0.0000
+##        s22      s23     s25     s27     s29      sA      sB     sC     sD
+## 1   0.0000   0.0000 18.9960  0.0000  0.0000  0.0000  0.0000  0.000 0.0000
+## 2   0.0000   0.0000  0.0000  0.0000  0.0000  0.0000  0.0000  0.000 0.0000
+## 3   0.0000   0.0000  0.0000 31.9352 14.4690 48.5928 39.0825 47.988 8.3948
+## 4   0.0000   0.0000  0.0000  0.0000  0.0000  4.1288  0.0000  0.000 0.0000
+## 5 195.2769 417.6231 94.3468  0.0000  0.0000  4.1288  0.0000  0.000 0.0000
+## 6   0.0000   0.0000  0.0000 15.9676 72.8273  0.0000  0.0000  0.000 0.0000
+##         sE       sF    sG      w22      w23      w25     w27      w29      wA
+## 1   0.0000   0.0000  0.00  0.00000   0.0000 0.000000 0.00000 0.000000 0.00000
+## 2   0.0000   0.0000  0.00  0.00000   0.0000 0.000000 0.00000 0.175308 0.00000
+## 3 160.3664  24.5458 17.78  0.00000   0.0000 0.000000 0.00000 0.000000 0.00000
+## 4   0.0000   0.0000  0.00  0.00000   0.0000 0.000000 0.00000 0.000000 0.00000
+## 5  17.5744 121.1454  0.00 69.54302 135.4973 2.266827 1.77331 2.621272 0.05093
+## 6   0.0000   0.0000  0.00  0.00000   0.0000 0.000000 0.00000 0.000000 0.00000
+##        wB       wC       wD
+## 1 0.00000 0.000000 0.000000
+## 2 0.00000 0.000000 0.000000
+## 3 1.10334 0.290862 0.434031
+## 4 0.00000 0.000000 0.000000
+## 5 0.13916 0.000000 0.289354
+## 6 0.00000 0.000000 0.000000
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#find out dominant species}
+\NormalTok{dominant\_sp.df }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\FunctionTok{ifelse}\NormalTok{(cop\_compo\_season }\SpecialCharTok{\textgreater{}=} \DecValTok{5}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{))}
+\NormalTok{dominant\_species }\OtherTok{\textless{}{-}} \FunctionTok{rownames}\NormalTok{(dominant\_sp.df)[}\FunctionTok{rowSums}\NormalTok{(dominant\_sp.df) }\SpecialCharTok{\textgreater{}=} \DecValTok{1}\NormalTok{]}
+\FunctionTok{as.numeric}\NormalTok{(dominant\_species)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]   5  14  15  35  40  51  54  60  72  79  84  85  86  88 106 112 117 118 123
+## [20] 126 135 142 145 147 161 164 169
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cop\_sp[dominant\_species,]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] "Acartia pacifica"                      
+##  [2] "Calanus sinicus"                       
+##  [3] "Canthocalanus pauper"                  
+##  [4] "Clausocalanus furcatus"                
+##  [5] "Clausocalanus minor"                   
+##  [6] "Subeucalanus pileatus"                 
+##  [7] "Subeucalanus copepodid"                
+##  [8] "Euchaeta copepodid"                    
+##  [9] "Acrocalanus gibber"                    
+## [10] "Calocalanus pavoninus"                 
+## [11] "Paracalanus aculeatus"                 
+## [12] "Paracalanus pavus"                     
+## [13] "Paracalanus serrulus"                  
+## [14] "Parvocalanus crassirostris"            
+## [15] "Scolecithricella longispinosa"         
+## [16] "Temora turbinata"                      
+## [17] "Oithona attenuata"                     
+## [18] "Oithona brevicornis"                   
+## [19] "Oithona plumifera"                     
+## [20] "Oithona similis"                       
+## [21] "Euterpina acutifrons"                  
+## [22] "Corycaeus (Ditrichocorycaeus)  affinis"
+## [23] "Corycaeus (Ditrichocorycaeus) dahli"   
+## [24] "Corycaeus (Ditrichocorycaeus) lubbocki"
+## [25] "Corycaeidae copepodid"                 
+## [26] "Oncaea conifera"                       
+## [27] "Oncaea venusta"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#calculate the mean of three seasons respectively}
+\NormalTok{dominant\_sp\_den }\OtherTok{\textless{}{-}}\NormalTok{ sp\_den\_cr\_season.df[dominant\_species, ]}
+\NormalTok{dominant\_sp\_den}\SpecialCharTok{$}\NormalTok{spring\_mean }\OtherTok{\textless{}{-}} \FunctionTok{rowMeans}\NormalTok{(dominant\_sp\_den[, }\DecValTok{1}\SpecialCharTok{:}\DecValTok{10}\NormalTok{])}
+\NormalTok{dominant\_sp\_den}\SpecialCharTok{$}\NormalTok{summer\_mean }\OtherTok{\textless{}{-}} \FunctionTok{rowMeans}\NormalTok{(dominant\_sp\_den[, }\DecValTok{11}\SpecialCharTok{:}\DecValTok{25}\NormalTok{])}
+\NormalTok{dominant\_sp\_den}\SpecialCharTok{$}\NormalTok{winter\_mean }\OtherTok{\textless{}{-}} \FunctionTok{rowMeans}\NormalTok{(dominant\_sp\_den[, }\DecValTok{26}\SpecialCharTok{:}\DecValTok{34}\NormalTok{])}
+
+\NormalTok{dominant\_sp\_den\_season }\OtherTok{\textless{}{-}}\NormalTok{ dominant\_sp\_den[, }\DecValTok{35}\SpecialCharTok{:}\DecValTok{37}\NormalTok{]}
+\FunctionTok{rownames}\NormalTok{(dominant\_sp\_den\_season) }\OtherTok{\textless{}{-}}\NormalTok{ cop\_sp[dominant\_species,]}
+\NormalTok{dominant\_sp\_den\_season}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                                        spring_mean summer_mean winter_mean
+## Acartia pacifica                           0.00000   67.728267 23.57568900
+## Calanus sinicus                           86.46599    2.500233  4.60278089
+## Canthocalanus pauper                       3.42582  204.692020  1.26660244
+## Clausocalanus furcatus                    11.92657   63.691307  0.67185067
+## Clausocalanus minor                       11.44634   23.415760  0.68068656
+## Subeucalanus pileatus                      0.00000   28.013247  0.86376644
+## Subeucalanus copepodid                     4.87340   40.484947  0.22946133
+## Euchaeta copepodid                        28.35273   41.598293 23.15445778
+## Acrocalanus gibber                        10.71096  156.406840  0.99605678
+## Calocalanus pavoninus                      1.45908   26.636913  0.00000000
+## Paracalanus aculeatus                     54.09300   18.917167  9.39986078
+## Paracalanus pavus                        626.17119  414.204633 18.13617244
+## Paracalanus serrulus                       0.00000  107.269380  0.02491267
+## Parvocalanus crassirostris                11.22283  419.718387  0.03758444
+## Scolecithricella longispinosa              0.76840   20.457953  4.46338178
+## Temora turbinata                           3.69089  267.764627  0.97009244
+## Oithona attenuata                          0.47348  134.511173  0.00000000
+## Oithona brevicornis                        0.23674   53.421613  0.00000000
+## Oithona plumifera                         28.78133   83.105013  0.99051589
+## Oithona similis                          115.08926   38.426887  0.00000000
+## Euterpina acutifrons                       7.36190  197.810427  0.00000000
+## Corycaeus (Ditrichocorycaeus)  affinis   161.22854    6.445867  0.00000000
+## Corycaeus (Ditrichocorycaeus) dahli        1.75298   97.267093  0.08584778
+## Corycaeus (Ditrichocorycaeus) lubbocki     0.00000   75.731147  1.56444311
+## Corycaeidae copepodid                     21.42939    0.000000  0.00000000
+## Oncaea conifera                            1.12309  116.335620  0.95004678
+## Oncaea venusta                            33.96802  341.826987  1.25436611
+\end{verbatim}
+
+\end{document}
