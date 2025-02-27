@@ -117,3 +117,15 @@ dominant_sp_den$winter_mean <- rowMeans(dominant_sp_den[, 26:34])
 dominant_sp_den_season <- dominant_sp_den[, 35:37]
 rownames(dominant_sp_den_season) <- cop_sp[dominant_species,]
 dominant_sp_den_season
+
+#answer
+
+#"apply" to check dominant
+?apply
+
+#richness
+# != 0
+
+#matrix multiply (operation) is much more efficient than "for" loop 
+  
+  
