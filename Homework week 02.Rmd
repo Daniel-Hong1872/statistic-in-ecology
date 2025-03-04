@@ -1,0 +1,67 @@
+---
+title: "Hw 02"
+author: "Daniel"
+date: "2025-03-04"
+output: html_document
+---
+
+# 1a. Generate 10000 random numbers from Gaussian distribution with mean=20 and variance =10, and plot the distribution.
+```{r}
+set.seed(123)
+g_dis <- rnorm(10000, 20, 10) #use the rnorm function to generate a Gaussian distribution
+
+hist(g_dis) #plot the histogram
+```
+
+# 1b. Generate 10000 random numbers from Binomial distribution with p=0.5 and n=40, and plot the distribution.
+```{r}
+set.seed(123)
+n <- 40 #setting n=40
+p <- 0.5 #setting p=0.5
+size <- 10000 #to generate 10000 numbers
+
+b_dis <- rep(0, size) #make an empty numeric to store the result
+
+for(i in 1:size){
+  b_dis[i] <- sum(runif(n) < p) #generate 40 random numbers from uniform distribution and if the resulting number is smaller than 0.5, defined as success, then sum up the number of success to become the result of binomial distribution
+}
+
+hist(b_dis) #plot the histogram
+```
+
+# Compare the distribution of 1a and 1b, what do you find?
+```{r}
+par(mfrow = c(1, 2)) #change the default to compare two plots at the same time
+hist(g_dis)
+hist(b_dis)
+```
+
+### 1. Gaussian distribution has a wider result range
+### 2. the result frequency is higher in binomial distribution relative to Gaussian distribution
+
+# 2. Make a program that can select our candidates for presentation next week. This program should select randomly but avoid selecting the numbers that had been selected before.
+```{r}
+candi <- function (m, w){ #name the function "candi" and the arguments are the number of the class member "m", and total weeks of this semester"w"
+  selected <- numeric(0) #build a empty numeric to record the number has been selected
+  candidate <- matrix(0, nrow = w, ncol = 2) #generate an empty matrix to store the result
+  
+  for(week in 1:w){
+    repeat{ #repeat the loop till all requirements are satisfied
+      num1 <- round(runif(1, 1, m)) #use "round" to change the result of "runif" into integer
+      num2 <- round(runif(1, 1, m))
+      
+      if(num1 != num2 && !(num1 %in% selected) && !(num2 %in% selected)){ #if num1 is unequal to num2 and both of them haven't been selected yet
+        candidate[week, ] <- c(num1, num2) #then combine those two number into the candidate matrix
+        selected <- c(selected, num1, num2) #also put those two number into the "selected" numeric
+        break #break the loop and continue for next week
+      }
+    }
+  }
+  return(candidate) #return the result
+}
+```
+```{r}
+set.seed(123)
+candi(34, 16)
+```
+
