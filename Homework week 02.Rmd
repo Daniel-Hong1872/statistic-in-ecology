@@ -8,8 +8,10 @@ output: html_document
 # 1a. Generate 10000 random numbers from Gaussian distribution with mean=20 and variance =10, and plot the distribution.
 ```{r}
 set.seed(123)
-g_dis <- rnorm(10000, 20, 10) #use the rnorm function to generate a Gaussian distribution
-
+g_dis1 <- rnorm(10000) #use the rnorm function to generate a Gaussian distribution
+g_dis <- g_dis1  * 10 + 20 #change the standard deviation and mean
+mean(g_dis)
+sd(g_dis)
 hist(g_dis) #plot the histogram
 ```
 
@@ -41,27 +43,35 @@ hist(b_dis)
 
 # 2. Make a program that can select our candidates for presentation next week. This program should select randomly but avoid selecting the numbers that had been selected before.
 ```{r}
-candi <- function (m, w){ #name the function "candi" and the arguments are the number of the class member "m", and total weeks of this semester"w"
-  selected <- numeric(0) #build a empty numeric to record the number has been selected
-  candidate <- matrix(0, nrow = w, ncol = 2) #generate an empty matrix to store the result
+candi <- function(m){ #name the function "candi" with a argument "m" represent the number of students
+  if (!exists("used", envir = .GlobalEnv)) { #if the numeric "used" is not exist, then initialize. ".GlobalEnv" make sure "used" will stay in the environment all time, and prevent it disappear after execute this function
+    assign("used", numeric(0), envir = .GlobalEnv) #else assign "used" as a empty numeric to stored the number which has been chosen
+  }  
+  available <- setdiff(1:m, used) #use "setdiff" to select the number in 1:m but not in "used" and define them as "available"
   
-  for(week in 1:w){
-    repeat{ #repeat the loop till all requirements are satisfied
-      num1 <- round(runif(1, 1, m)) #use "round" to change the result of "runif" into integer
-      num2 <- round(runif(1, 1, m))
-      
-      if(num1 != num2 && !(num1 %in% selected) && !(num2 %in% selected)){ #if num1 is unequal to num2 and both of them haven't been selected yet
-        candidate[week, ] <- c(num1, num2) #then combine those two number into the candidate matrix
-        selected <- c(selected, num1, num2) #also put those two number into the "selected" numeric
-        break #break the loop and continue for next week
-      }
-    }
-  }
+  x <- runif(length(available)) #use the length of "available" to generate a uniform distribution
+  candidate <- available[order(x)][1:2] #order them so the results are integer and take the first two as candidate
+  
+  assign("used", c(used, candidate), envir = .GlobalEnv) #assign "used" again but add those candidate into "used" 
+  
   return(candidate) #return the result
 }
 ```
 ```{r}
 set.seed(123)
-candi(34, 16)
+print(candi(30))
+print(candi(30))
+print(candi(30))
+print(candi(30))
+print(candi(30))
+print(candi(30))
+print(candi(30))
+print(candi(30))
+print(candi(30))
+print(candi(30))
+print(candi(30))
+print(candi(30))
+print(candi(30))
+print(candi(30))
+print(candi(30))
 ```
-
