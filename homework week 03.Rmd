@@ -148,6 +148,7 @@ b1 <- b[2] #the second one is b1
 plot(f_c_den$`CopepodDensity ind./m3)`, y, main = "Fish v.s. Copepod", xlab = "copepod density", ylab = "fish density")
 abline(b0, b1, col = "lightblue", lwd = 1.5) 
 ```
+
 ### Bootstrap b0 and b1
 
 ```{r}
@@ -263,6 +264,6 @@ legend("bottomright", legend = c("Normal", "Bootstrap", "Jackknife"),
 #### 1. Bootstrap have the highest value of fish mean and lowest value of fish SE(mean).
 #### 2. Normal theory and Jackknife have the same value of fish density.
 #### 3. Same situation occur at copepod composition.
-#### 4. Bootstrap's b0 mean, SE(b0), and SE(b1) have a smaller value relative to Jacknife.
+#### 4. Bootstrap's b0 mean, SE(b0), and SE(b1) have a smaller value relative to Jackknife.
 #### 5. Only b1 mean is higher by bootstrap than Jackknife
-#### 6. Jacknife have a similar regression coefficients with original data.
+#### 6. Jackknife have a similar regression coefficients with original data.
