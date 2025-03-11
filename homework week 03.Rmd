@@ -1,38 +1,67 @@
+---
+title: "homework week 03"
+author: "Daniel"
+date: "2025-03-10"
+output: html_document
+---
+```{r}
+#setup
 setwd("C:/Users/dan91/Rstudio/statistic-in-ecology/stat_data")
 library(readxl)
 f_c_den <- read_excel("mock_dataTS/enviANDdensity.xls")
-# 1. Compute the mean and SE(mean) for the fish and copepod densities
-#Plot the histogram of bootstrapped means with bootstrap 1000 times.
+```
+# Compute the mean and SE(mean) for the fish and copepod densities
+# Plot the histogram of bootstrapped means with bootstrap 1000 times.
 
-# normal theory
-# mean
+## Normal theory
+### mean
+
+```{r}
 Normal_f_mean <- mean(f_c_den$`FishDensity (ind./1000m3)`)
 Normal_c_mean <- mean(f_c_den$`CopepodDensity ind./m3)`)
-# SE:
+print(Normal_f_mean)
+print(Normal_c_mean)
+```
+
+### SE
+
+```{r}
 Normal_f_SE <- sd(f_c_den$`FishDensity (ind./1000m3)`) / sqrt(length(f_c_den$`FishDensity (ind./1000m3)`))
 Normal_c_SE <- sd(f_c_den$`CopepodDensity ind./m3)`) / sqrt(length(f_c_den$`CopepodDensity ind./m3)`))
+print(Normal_f_SE)
+print(Normal_c_SE)
+```
 
-#non-parametric bootstrap
-# fish mean:
-B <- 1000
-n <- length(f_c_den$`FishDensity (ind./1000m3)`)
-bootstrap_fish_mean <- numeric(B)
+## Bootstrap
+### fish mean
+
+```{r}
+B <- 1000 #bootstrap 1000 times
+n <- length(f_c_den$`FishDensity (ind./1000m3)`) #number of the data
+bootstrap_fish_mean <- numeric(B) #generate a empty numeric with 1000 space to store the results
 
 set.seed(123)
 for(i in 1:B){
-  r <- ceiling(runif(n, 1, n))
-  resample_f_mean <- f_c_den$`FishDensity (ind./1000m3)`[r]
+  r <- ceiling(runif(n, 1, n)) #generate n number of random integer to represent the bootstrap sample
+  resample_f_mean <- f_c_den$`FishDensity (ind./1000m3)`[r] #select the samples into resample
   
-  bootstrap_fish_mean[i] <- mean(resample_f_mean)
+  bootstrap_fish_mean[i] <- mean(resample_f_mean) #calculate mean of every resample
   }
-Bootstrap_f_mean <- mean(bootstrap_fish_mean)
+Bootstrap_f_mean <- mean(bootstrap_fish_mean) #calculate the mean of total mean of the resample
 hist(bootstrap_fish_mean, breaks = 50)
+```
 
-#fish SE(mean)
+### fish SE(mean)
+
+```{r}
 bootstrap_fish_SE <- sd(bootstrap_fish_mean)
 print(bootstrap_fish_SE)
+```
 
-#copepod mean
+### copepod mean
+
+```{r}
+#same as fish mean
 bootstrap_copepod_mean <- numeric(B)
 
 set.seed(123)
@@ -44,21 +73,36 @@ for(i in 1:B){
 }
 Bootstrap_c_mean <- mean(bootstrap_copepod_mean)
 hist(bootstrap_copepod_mean, breaks = 50)
+```
 
-#copepod SE(mean)
+### copepod SE(mean)
+
+```{r}
+#same as fish SE (mean)
 bootstrap_copepod_SE <- sd(bootstrap_copepod_mean)
 print(bootstrap_copepod_SE)
+```
 
-# 2. Compute the median and bootstrapped SE(median) for the fish and copepod densities. 
-#Plot the histogram of bootstrapped medians with bootstrap 1000 times.
+# Compute the median and bootstrapped SE(median) for the fish and copepod densities. 
+# Plot the histogram of bootstrapped medians with bootstrap 1000 times.
 
-#fish median
+## Normal theory
+### fish median
+
+```{r}
 median(f_c_den$`FishDensity (ind./1000m3)`)
+```
 
-#copepod median
+### copepod median
+
+```{r}
 median(f_c_den$`CopepodDensity ind./m3)`)
+```
 
-#bootstrap fish SE(median)
+## Bootstrap
+### fish SE(median)
+
+```{r}
 bootstrap_fish_median <- numeric(B)
 
 set.seed(123)
@@ -71,8 +115,11 @@ for(i in 1:B){
 Bootstrap_f_SE_median <- sd(bootstrap_fish_median)
 print(Bootstrap_f_SE_median)
 hist(bootstrap_fish_median, breaks = 50)
+```
 
-#bootstrap copepod SE(median)
+### copepod SE(median)
+
+```{r}
 bootstrap_copepod_median <- numeric(B)
 
 set.seed(123)
@@ -85,20 +132,25 @@ for(i in 1:B){
 Bootstrap_c_SE_median <- sd(bootstrap_copepod_median)
 print(Bootstrap_c_SE_median)
 hist(bootstrap_copepod_median, breaks = 50)
+```
 
-#Plot fish (dependent) v.s copepod (independent) and the regression line. 
-#Compute the regression coefficients for fish = b0+b1*copepod and bootstrapped SE(b0) and SE(b1). 
-#Plot the histogram of bootstrapped b0 and b1 with bootstrap 1000 times.
+# Plot fish (dependent) v.s copepod (independent) and the regression line. 
+# Compute the regression coefficients for fish = b0+b1*copepod and bootstrapped SE(b0) and SE(b1). 
+# Plot the histogram of bootstrapped b0 and b1 with bootstrap 1000 times.
 
-x <- cbind(1, f_c_den$`CopepodDensity ind./m3)`)
+```{r}
+x <- cbind(1, f_c_den$`CopepodDensity ind./m3)`) #combine 1 into the matrix to calculate the intercept, which is b0
 y <- f_c_den$`FishDensity (ind./1000m3)`
-b <- solve(t(x) %*% x) %*% t(x) %*% y
-b0 <- b[1]
-b1 <- b[2]
+b <- solve(t(x) %*% x) %*% t(x) %*% y #use the equation: b = (x'x)^-1x'y, to calculate b0 and b1
+b0 <- b[1] #since add 1 into the matrix, the first element is b0
+b1 <- b[2] #the second one is b1
 
 plot(f_c_den$`CopepodDensity ind./m3)`, y, main = "Fish v.s. Copepod", xlab = "copepod density", ylab = "fish density")
-abline(b0, b1, col = "lightblue", lwd = 1.5)
+abline(b0, b1, col = "lightblue", lwd = 1.5) 
+```
+### Bootstrap b0 and b1
 
+```{r}
 bootstrap_b0 <- numeric(B)
 bootstrap_b1 <- numeric(B)
 
@@ -106,51 +158,60 @@ set.seed(123)
 for(i in 1:B){
   r <- ceiling(runif(n, 1, n))
   
-  resample_x <- x[r,]
-  resample_y <- y[r]
+  resample_x <- x[r,] #resample x to do bootstrap
+  resample_y <- y[r] #also resample y
   
-  bootstrap_b <- solve(t(resample_x) %*% resample_x) %*% t(resample_x) %*% resample_y
+  bootstrap_b <- solve(t(resample_x) %*% resample_x) %*% t(resample_x) %*% resample_y #solve the equation again to get b
   
   bootstrap_b0[i] <- bootstrap_b[1]
   bootstrap_b1[i] <- bootstrap_b[2]
 }
 
+#calculate the SE of b0 and b1
 bootstrap_SE_b0 <- sd(bootstrap_b0)
 bootstrap_SE_b1 <- sd(bootstrap_b1)
 
+#calculate the mean of b0 and b1
 Bootstrap_b0_mean <- mean(bootstrap_b0)
 Bootstrap_b1_mean <- mean(bootstrap_b1)
 
+#plot the histogram of both
 hist(bootstrap_b0, breaks = 50)
 hist(bootstrap_b1, breaks = 50)
+```
 
-# 1. Compute the mean and stand error of the mean for the fish and copepod density (all data points) respectively using Jackknife. 
-#Plot the histogram of Jackknife means.
+# Compute the mean and stand error of the mean for the fish and copepod density (all data points) respectively using Jackknife. 
+# Plot the histogram of Jackknife means.
 
+```{r}
 jackknife_f_mean <- numeric(n)
 jackknife_c_mean <- numeric(n)
 
-for(i in 1:n){
+for(i in 1:n){ #for each sample of jackknife, minus one data in each sample and then calculate the mean
   jackknife_f_mean[i] <- mean(f_c_den$`FishDensity (ind./1000m3)`[-i])
   jackknife_c_mean[i] <- mean(f_c_den$`CopepodDensity ind./m3)`[-i])
 }
 Jackknife_f_mean <- mean(jackknife_f_mean)
 Jackknife_c_mean <- mean(jackknife_c_mean)
 
+#calculate SE of jackknife by the equation: 
 jackknife_f_SE_mean <- sqrt((n - 1) / n * sum((jackknife_f_mean - mean(jackknife_f_mean)) ^ 2))
 jackknife_c_SE_mean <- sqrt((n - 1) / n * sum((jackknife_c_mean - mean(jackknife_c_mean)) ^ 2))
 
+#plot the histogram
 hist(jackknife_f_mean, breaks = 50)
 hist(jackknife_c_mean, breaks = 50)
+```
 
-# 2. Compute the regression coefficients for fish = b0+b1*copepod and Jackknife SE of b0 and b1.
-#Plot the histogram of Jackknife b0 and b1.
+# Compute the regression coefficients for fish = b0+b1*copepod and Jackknife SE of b0 and b1.
+# Plot the histogram of Jackknife b0 and b1.
 
+```{r}
 jackknife_b0 <- numeric(n)
 jackknife_b1 <- numeric(n)
 
 for(i in 1:n){
-  jackknife_x <- cbind(1, f_c_den$`CopepodDensity ind./m3)`[-i])
+  jackknife_x <- cbind(1, f_c_den$`CopepodDensity ind./m3)`[-i]) #same as above to add 1 with the matrix to calculate b0
   jackknife_y <- f_c_den$`FishDensity (ind./1000m3)`[-i]
   
   jackknife_b <- solve(t(jackknife_x) %*% jackknife_x) %*% t(jackknife_x) %*% jackknife_y
@@ -159,17 +220,21 @@ for(i in 1:n){
   jackknife_b1[i] <- jackknife_b[2]
 }
 
+#calculate the SE of b0 and b1
 jackknife_SE_b0 <- sqrt((n - 1) / n * sum((jackknife_b0 - mean(jackknife_b0)) ^ 2))
 jackknife_SE_b1 <- sqrt((n - 1) / n * sum((jackknife_b1 - mean(jackknife_b1)) ^ 2))
 
 Jackknife_b0_mean <- mean(jackknife_b0)
 Jackknife_b1_mean <- mean(jackknife_b1)
 
+#plot the histogram
 hist(jackknife_b0, breaks = 50)
 hist(jackknife_b1, breaks = 50)
+```
 
-# 3. Compare the estimates for Q1 and Q2 obtained from normal theory, bootstrap, and jackknife.
+# Compare the estimates for Q1 and Q2 obtained from normal theory, bootstrap, and jackknife.
 
+```{r}
 fish_mean <- c(Normal_f_mean, Bootstrap_f_mean, Jackknife_f_mean)
 fish_SE_mean <- c(Normal_f_SE, bootstrap_fish_SE, jackknife_f_SE_mean)
 fish_compare <- data.frame(fish_mean, fish_SE_mean, row.names = c("Normal", "Bootstrap", "Jackknife"))
@@ -193,4 +258,11 @@ abline(Bootstrap_b0_mean, Bootstrap_b1_mean, col = "aquamarine", lwd = 2)
 abline(Jackknife_b0_mean, Jackknife_b1_mean, col = "brown2", lwd = 2, lty = 2)
 legend("bottomright", legend = c("Normal", "Bootstrap", "Jackknife"), 
        col = c("lightblue", "aquamarine", "brown2"), lty = c(1, 1, 2))
-       
+```
+
+#### 1. Bootstrap have the highest value of fish mean and lowest value of fish SE(mean).
+#### 2. Normal theory and Jackknife have the same value of fish density.
+#### 3. Same situation occur at copepod composition.
+#### 4. Bootstrap's b0 mean, SE(b0), and SE(b1) have a smaller value relative to Jacknife.
+#### 5. Only b1 mean is higher by bootstrap than Jackknife
+#### 6. Jacknife have a similar regression coefficients with original data.
