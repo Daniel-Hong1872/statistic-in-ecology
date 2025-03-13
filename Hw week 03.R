@@ -1,3 +1,8 @@
+#bootstrap only need 999 times, first one is the original data
+#always use the observed data mean, median, b0 and b1, not mean of bootstrap mean
+#write together
+#compare all together
+
 setwd("C:/Users/dan91/Rstudio/statistic-in-ecology/stat_data")
 library(readxl)
 f_c_den <- read_excel("mock_dataTS/enviANDdensity.xls")
@@ -13,39 +18,29 @@ Normal_f_SE <- sd(f_c_den$`FishDensity (ind./1000m3)`) / sqrt(length(f_c_den$`Fi
 Normal_c_SE <- sd(f_c_den$`CopepodDensity ind./m3)`) / sqrt(length(f_c_den$`CopepodDensity ind./m3)`))
 
 #non-parametric bootstrap
-# fish mean:
-B <- 1000
+# mean:
+B <- 999
 n <- length(f_c_den$`FishDensity (ind./1000m3)`)
-bootstrap_fish_mean <- numeric(B)
+bootstrap_fish_mean <- c(Normal_f_mean, numeric(B))
+bootstrap_copepod_mean <- c(Normal_c_mean, numeric(B))
 
 set.seed(123)
 for(i in 1:B){
   r <- ceiling(runif(n, 1, n))
   resample_f_mean <- f_c_den$`FishDensity (ind./1000m3)`[r]
+  resample_c_mean <- f_c_den$`CopepodDensity ind./m3)`[r]
   
-  bootstrap_fish_mean[i] <- mean(resample_f_mean)
-  }
-Bootstrap_f_mean <- mean(bootstrap_fish_mean)
+  bootstrap_fish_mean[i + 1] <- mean(resample_f_mean)
+  bootstrap_copepod_mean[i + 1] <- mean(resample_c_mean)
+    }
+par(mfrow = c(1, 2))
 hist(bootstrap_fish_mean, breaks = 50)
+hist(bootstrap_copepod_mean, breaks = 50)
 
-#fish SE(mean)
+#SE(mean)
 bootstrap_fish_SE <- sd(bootstrap_fish_mean)
 print(bootstrap_fish_SE)
 
-#copepod mean
-bootstrap_copepod_mean <- numeric(B)
-
-set.seed(123)
-for(i in 1:B){
-  r <- ceiling(runif(n, 1, n))
-  resample_c_mean <- f_c_den$`CopepodDensity ind./m3)`[r]
-  
-  bootstrap_copepod_mean[i] <- mean(resample_c_mean)
-}
-Bootstrap_c_mean <- mean(bootstrap_copepod_mean)
-hist(bootstrap_copepod_mean, breaks = 50)
-
-#copepod SE(mean)
 bootstrap_copepod_SE <- sd(bootstrap_copepod_mean)
 print(bootstrap_copepod_SE)
 
@@ -53,35 +48,31 @@ print(bootstrap_copepod_SE)
 #Plot the histogram of bootstrapped medians with bootstrap 1000 times.
 
 #fish median
-median(f_c_den$`FishDensity (ind./1000m3)`)
+f_median <- median(f_c_den$`FishDensity (ind./1000m3)`)
 
 #copepod median
-median(f_c_den$`CopepodDensity ind./m3)`)
+c_median <- median(f_c_den$`CopepodDensity ind./m3)`)
 
 #bootstrap fish SE(median)
 bootstrap_fish_median <- numeric(B)
+bootstrap_copepod_median <- numeric(B)
 
+#Bootstrap median
 set.seed(123)
 for(i in 1:B){
   r <- ceiling(runif(n, 1, n))
   resample_f_median <- f_c_den$`FishDensity (ind./1000m3)`[r]
+  resample_c_median <- f_c_den$`CopepodDensity ind./m3)`[r]
   
-  bootstrap_fish_median[i] <- median(resample_f_median)
-}
+  bootstrap_fish_median[i + 1] <- median(resample_f_median)
+  bootstrap_copepod_median[i + 1] <- median(resample_c_median)
+  }
+
+#SE(median)
 Bootstrap_f_SE_median <- sd(bootstrap_fish_median)
 print(Bootstrap_f_SE_median)
 hist(bootstrap_fish_median, breaks = 50)
 
-#bootstrap copepod SE(median)
-bootstrap_copepod_median <- numeric(B)
-
-set.seed(123)
-for(i in 1:B){
-  r <- ceiling(runif(n, 1, n))
-  resample_c_median <- f_c_den$`CopepodDensity ind./m3)`[r]
-  
-  bootstrap_copepod_median[i] <- median(resample_c_median)
-}
 Bootstrap_c_SE_median <- sd(bootstrap_copepod_median)
 print(Bootstrap_c_SE_median)
 hist(bootstrap_copepod_median, breaks = 50)
@@ -96,6 +87,17 @@ b <- solve(t(x) %*% x) %*% t(x) %*% y
 b0 <- b[1]
 b1 <- b[2]
 
+y_hat <- x %*% b  #prediction
+residuals <- y - y_hat  #residual
+sigma_hat <- sqrt(sum(residuals^2) / (n - 2))  # standard deviation of residual
+
+Normal_SE_b1 <- sigma_hat / sqrt(sum((f_c_den$`CopepodDensity ind./m3)` - mean(f_c_den$`CopepodDensity ind./m3)`))^2))
+Normal_SE_b0 <- sigma_hat * sqrt(1/n + (mean(f_c_den$`CopepodDensity ind./m3)`)^2) / sum((f_c_den$`CopepodDensity ind./m3)` - mean(f_c_den$`CopepodDensity ind./m3)`))^2))
+
+print(Normal_SE_b0)
+print(Normal_SE_b1)
+
+par(mfrow = c(1, 1))
 plot(f_c_den$`CopepodDensity ind./m3)`, y, main = "Fish v.s. Copepod", xlab = "copepod density", ylab = "fish density")
 abline(b0, b1, col = "lightblue", lwd = 1.5)
 
@@ -111,16 +113,14 @@ for(i in 1:B){
   
   bootstrap_b <- solve(t(resample_x) %*% resample_x) %*% t(resample_x) %*% resample_y
   
-  bootstrap_b0[i] <- bootstrap_b[1]
-  bootstrap_b1[i] <- bootstrap_b[2]
+  bootstrap_b0[i + 1] <- bootstrap_b[1]
+  bootstrap_b1[i + 1] <- bootstrap_b[2]
 }
 
 bootstrap_SE_b0 <- sd(bootstrap_b0)
 bootstrap_SE_b1 <- sd(bootstrap_b1)
 
-Bootstrap_b0_mean <- mean(bootstrap_b0)
-Bootstrap_b1_mean <- mean(bootstrap_b1)
-
+par(mfrow = c(1, 2))
 hist(bootstrap_b0, breaks = 50)
 hist(bootstrap_b1, breaks = 50)
 
@@ -162,35 +162,30 @@ for(i in 1:n){
 jackknife_SE_b0 <- sqrt((n - 1) / n * sum((jackknife_b0 - mean(jackknife_b0)) ^ 2))
 jackknife_SE_b1 <- sqrt((n - 1) / n * sum((jackknife_b1 - mean(jackknife_b1)) ^ 2))
 
-Jackknife_b0_mean <- mean(jackknife_b0)
-Jackknife_b1_mean <- mean(jackknife_b1)
-
 hist(jackknife_b0, breaks = 50)
 hist(jackknife_b1, breaks = 50)
 
 # 3. Compare the estimates for Q1 and Q2 obtained from normal theory, bootstrap, and jackknife.
 
-fish_mean <- c(Normal_f_mean, Bootstrap_f_mean, Jackknife_f_mean)
+mean <- c(Normal_f_mean, Normal_c_mean)
+median <- c(f_median, c_median)
+f_c_compare <- data.frame(mean, median, row.names = c("fish density", "copepod density"))
+f_c_compare
+
+b0_b1 <- data.frame(b0, b1)
+b0_b1
+
 fish_SE_mean <- c(Normal_f_SE, bootstrap_fish_SE, jackknife_f_SE_mean)
-fish_compare <- data.frame(fish_mean, fish_SE_mean, row.names = c("Normal", "Bootstrap", "Jackknife"))
-fish_compare
-
-copepod_mean <- c(Normal_c_mean, Bootstrap_c_mean, Jackknife_c_mean)
 copepod_SE_mean <- c(Normal_c_SE, bootstrap_copepod_SE, jackknife_c_SE_mean)
-copepod_compare <- data.frame(copepod_mean, copepod_SE_mean, row.names = c("Normal", "Bootstrap", "Jackknife"))
-copepod_compare
+SE_b0 <- c(Normal_SE_b0, bootstrap_SE_b0, jackknife_SE_b0)
+SE_b1 <- c(Normal_SE_b1, bootstrap_SE_b1, jackknife_SE_b1)
+method_compare <- data.frame(fish_SE_mean, copepod_SE_mean, SE_b0, SE_b1, row.names = c("Normal", "Bootstrap", "Jackknife"))
+method_compare
 
-b0_mean <- c(Bootstrap_b0_mean, Jackknife_b0_mean)
-b1_mean <- c(Bootstrap_b1_mean, Jackknife_b1_mean)
-SE_b0 <- c(bootstrap_SE_b0, jackknife_SE_b0)
-SE_b1 <- c(bootstrap_SE_b1, jackknife_SE_b1)
-b0_b1_compare <- data.frame(b0_mean, b1_mean, SE_b0, SE_b1, row.names = c("Bootstrap", "Jackknife"))
-b0_b1_compare
-
+par(mfrow = c(1, 1))
 plot(f_c_den$`CopepodDensity ind./m3)`, y, main = "Fish v.s. Copepod", xlab = "copepod density", ylab = "fish density")
 abline(b0, b1, col = "lightblue", lwd = 2)
 abline(Bootstrap_b0_mean, Bootstrap_b1_mean, col = "aquamarine", lwd = 2)
 abline(Jackknife_b0_mean, Jackknife_b1_mean, col = "brown2", lwd = 2, lty = 2)
 legend("bottomright", legend = c("Normal", "Bootstrap", "Jackknife"), 
        col = c("lightblue", "aquamarine", "brown2"), lty = c(1, 1, 2))
-       
