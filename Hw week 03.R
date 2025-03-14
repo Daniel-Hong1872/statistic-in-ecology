@@ -54,8 +54,8 @@ f_median <- median(f_c_den$`FishDensity (ind./1000m3)`)
 c_median <- median(f_c_den$`CopepodDensity ind./m3)`)
 
 #bootstrap fish SE(median)
-bootstrap_fish_median <- numeric(B)
-bootstrap_copepod_median <- numeric(B)
+bootstrap_fish_median <- c(f_median, numeric(B))
+bootstrap_copepod_median <- c(c_median, numeric(B))
 
 #Bootstrap median
 set.seed(123)
@@ -101,8 +101,8 @@ par(mfrow = c(1, 1))
 plot(f_c_den$`CopepodDensity ind./m3)`, y, main = "Fish v.s. Copepod", xlab = "copepod density", ylab = "fish density")
 abline(b0, b1, col = "lightblue", lwd = 1.5)
 
-bootstrap_b0 <- numeric(B)
-bootstrap_b1 <- numeric(B)
+bootstrap_b0 <- c(b0, numeric(B))
+bootstrap_b1 <- c(b1, numeric(B))
 
 set.seed(123)
 for(i in 1:B){
@@ -181,11 +181,3 @@ SE_b0 <- c(Normal_SE_b0, bootstrap_SE_b0, jackknife_SE_b0)
 SE_b1 <- c(Normal_SE_b1, bootstrap_SE_b1, jackknife_SE_b1)
 method_compare <- data.frame(fish_SE_mean, copepod_SE_mean, SE_b0, SE_b1, row.names = c("Normal", "Bootstrap", "Jackknife"))
 method_compare
-
-par(mfrow = c(1, 1))
-plot(f_c_den$`CopepodDensity ind./m3)`, y, main = "Fish v.s. Copepod", xlab = "copepod density", ylab = "fish density")
-abline(b0, b1, col = "lightblue", lwd = 2)
-abline(Bootstrap_b0_mean, Bootstrap_b1_mean, col = "aquamarine", lwd = 2)
-abline(Jackknife_b0_mean, Jackknife_b1_mean, col = "brown2", lwd = 2, lty = 2)
-legend("bottomright", legend = c("Normal", "Bootstrap", "Jackknife"), 
-       col = c("lightblue", "aquamarine", "brown2"), lty = c(1, 1, 2))
