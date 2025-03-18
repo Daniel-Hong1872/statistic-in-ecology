@@ -1,14 +1,23 @@
-#Compute the regression coefficients for fish = b0+b1*copepod
-#using bootstrap method to calculate the 95% confidence limits of b1 
-#test whether b1 is significantly different from 0 (with bootstrap 1000 times). 
-#Please calculate the CL using three methods: percentile, BC and BCa methods.
+---
+title: "homework week 04"
+author: "Daniel"
+date: "2025-03-18"
+output: html_document
+---
+# Compute the regression coefficients for fish = b0+b1*copepod using bootstrap method to calculate the 95% confidence limits of b1 
+# Test whether b1 is significantly different from 0 (with bootstrap 1000 times)
+# Please calculate the CL using three methods: percentile, BC and BCa methods
 
+```{r}
 setwd("C:/Users/dan91/Rstudio/statistic-in-ecology/stat_data")
 library(readxl)
 f_c_den <- read_excel("mock_dataTS/enviANDdensity.xls")
 fish_den <- f_c_den$`FishDensity (ind./1000m3)`
 copepod_den <- f_c_den$`CopepodDensity ind./m3)`
+```
 
+```{r}
+#same as last week but bootstrap b1 only
 x <- cbind(1, copepod_den)
 y <- fish_den
 b <- solve(t(x) %*% x) %*% t(x) %*% y
@@ -31,22 +40,32 @@ for(i in 1:B){
   
   bootstrap_b1[i + 1] <- bootstrap_b[2]
 }
+```
 
-#percentile
-sort_b1 <- sort(bootstrap_b1)
-lower_percentile <- sort_b1[floor(0.025 * (B + 1))]
+## percentile
+
+```{r}
+sort_b1 <- sort(bootstrap_b1) #sort the result of bootstrap b1 to find lower and upper limit of 95% confidence interval
+lower_percentile <- sort_b1[floor(0.025 * (B + 1))] #use "floor" to make sure the number is integer
 upper_percentile <- sort_b1[floor(0.975 * (B + 1))]
 
 print(c(lower_percentile, upper_percentile))
+```
 
-#BC method
-z0 <- qnorm(sum(bootstrap_b1 < b1)/(B + 1))
-lower_BC <- sort_b1[floor(pnorm(2 * z0 - 1.96) * (B + 1))]
+## BC method
+
+```{r}
+z0 <- qnorm(sum(bootstrap_b1 < b1)/(B + 1)) #sum up how many bootstrap results are smaller than the original b1 to indicate the bias from original data
+lower_BC <- sort_b1[floor(pnorm(2 * z0 - 1.96) * (B + 1))] #use the adjustment equation
 upper_BC <- sort_b1[floor(pnorm(2 * z0 + 1.96) * (B + 1))]
 
 print(c(lower_BC, upper_BC))
+```
 
-#BCa method
+## BCa method
+
+```{r}
+#jackknife same as last week
 jackknife_b1 <- numeric(n)
 
 set.seed(123)
@@ -59,28 +78,36 @@ for(i in 1:n){
   jackknife_b1[i] <- jackknife_b[2]
 }
 
+#calculate acceleration by the formula
 mean_jackknife_b1 <- mean(jackknife_b1)
 numerator <- sum((mean_jackknife_b1 - jackknife_b1) ^ 3)
 denominator <- 6 * (sum((mean_jackknife_b1 - jackknife_b1) ^ 2) ^ (3/2))
 a <- numerator / denominator
 
-lower_BCa <- sort_b1[floor(pnorm(z0 + (z0 - 1.96) / (1 - a * (z0 - 1.96))) * (B + 1))]
+lower_BCa <- sort_b1[floor(pnorm(z0 + (z0 - 1.96) / (1 - a * (z0 - 1.96))) * (B + 1))] #use the adjustment equation
 upper_BCa <- sort_b1[floor(pnorm(z0 + (z0 + 1.96) / (1 - a * (z0 + 1.96))) * (B + 1))]
 
 print(c(lower_BCa, upper_BCa))
+```
 
-#testing b1
+## testing b1
+
+```{r}
+# calculate the p-value of two tailed test
+# H0: b1 = 0
+# H1: b1 ≠ 0
 p_value <- 2 * min(mean(bootstrap_b1 <= 0), mean(bootstrap_b1 >= 0))
 if (p_value < 0.05){
   print("b1 is significant different from 0")
 } else{
   print("b1 is not significant different from 0")
 }
+```
 
+# Bootstrap test whether significant difference exists between the density of Oncaea Venusta and Canthocalanus pauper.
 
-
-#Bootstrap test whether significant difference exists between the density of Oncaea Venusta and Canthocalanus pauper.
-
+```{r}
+setwd("C:/Users/dan91/Rstudio/statistic-in-ecology/stat_data")
 cop_compo <- read.table("mock_dataTS/copepod_composition.txt", header = T)
 cop_den <- read.table("mock_dataTS/cop_density.txt")
 cop_sp <- read.table("mock_dataTS/copepodSPlist.txt", fill = T, sep = "\n")
@@ -88,7 +115,10 @@ cop_sp <- read.table("mock_dataTS/copepodSPlist.txt", fill = T, sep = "\n")
 row.names(cop_compo) <- cop_sp$V1
 Onve <- cop_compo["Oncaea venusta",] / 100
 Capa <- cop_compo["Canthocalanus pauper",] / 100
+```
 
+```{r}
+#calculate the density of Oncaea venusta and Canthocalanus pauper respectively
 Onve_den <- matrix(0, nrow = 1, ncol = length(cop_den$V1))
 row.names(Onve_den) <- "Oncaea venusta"
 for(i in 1:length(cop_den$V1)){
@@ -100,7 +130,11 @@ row.names(Capa_den) <- "Canthocalanus pauper"
 for(i in 1:length(cop_den$V1)){
   Capa_den[, i] <- Capa[, i] * cop_den[i,]
 }
+```
 
+## comparing by bootstrap confidence interval
+
+```{r}
 Onve_den_mean <- mean(Onve_den)
 Capa_den_mean <- mean(Capa_den)
 original_diff <- Onve_den_mean - Capa_den_mean
@@ -120,15 +154,21 @@ lower_diff <- sort_diff[floor(0.025 * (1 + B))]
 upper_diff <- sort_diff[floor(0.975 * (1 + B))]
 
 print(c(lower_diff, upper_diff))
+```
 
+```{r}
+#if the interval contain 0, indicate that these two species have no significant difference
 if(lower_diff > 0 | upper_diff < 0) {
   print("the density of these two species have significant difference")
 } else {
   print("the density of these two species have no significant difference")
 }
+```
 
-#BCa
+## comparing by BCa
 
+```{r}
+#the same process as above
 Z0 <- qnorm(sum(Bootstrap_diff < original_diff) / (B + 1))
 jackknife_diff <- numeric(n)
 
@@ -146,8 +186,11 @@ A <- numerator_diff / denominator_diff
 lower_BCa_diff <- sort(Bootstrap_diff)[floor(pnorm(Z0 + (Z0 - 1.96) / (1 - a * (Z0 - 1.96))) * (B + 1))]
 upper_BCa_diff <- sort(Bootstrap_diff)[floor(pnorm(Z0 + (Z0 + 1.96) / (1 - a * (Z0 + 1.96))) * (B + 1))]
 
+#if the interval contain 0, indicate that these two species have no significant difference 
 if(lower_BCa_diff > 0 | upper_BCa_diff < 0) {
   print("the density of these two species have significant difference")
 } else {
   print("the density of these two species have no significant difference")
 }
+```
+
