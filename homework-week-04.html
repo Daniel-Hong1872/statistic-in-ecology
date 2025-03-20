@@ -443,16 +443,13 @@ print(c(lower_BCa, upper_BCa))</code></pre>
 </div>
 <div id="testing-b1" class="section level2">
 <h2>testing b1</h2>
-<pre class="r"><code># calculate the p-value of two tailed test
-# H0: b1 = 0
-# H1: b1 ≠ 0
-p_value &lt;- 2 * min(mean(bootstrap_b1 &lt;= 0), mean(bootstrap_b1 &gt;= 0))
-if (p_value &lt; 0.05){
-  print(&quot;b1 is significant different from 0&quot;)
-} else{
-  print(&quot;b1 is not significant different from 0&quot;)
+<pre class="r"><code>#if the confidence interval does not include 0, then b1 is significantly different from 0
+if(lower_BCa &gt; 0 | upper_BCa &lt; 0) {
+  print(&quot;b1 and 0 have significant difference&quot;)
+} else {
+  print(&quot;b1 and 0 have no significant difference&quot;)
 }</code></pre>
-<pre><code>## [1] &quot;b1 is significant different from 0&quot;</code></pre>
+<pre><code>## [1] &quot;b1 and 0 have significant difference&quot;</code></pre>
 </div>
 </div>
 <div id="bootstrap-test-whether-significant-difference-exists-between-the-density-of-oncaea-venusta-and-canthocalanus-pauper." class="section level1">
@@ -486,10 +483,9 @@ original_diff &lt;- Onve_den_mean - Capa_den_mean
 
 Bootstrap_diff &lt;- c(original_diff, numeric(B))
 
-set.seed(111)
 for(i in 1:B){
-  resample_onve &lt;- Onve_den[floor(runif(n, 1, n))]
-  resample_capa &lt;- Capa_den[floor(runif(n, 1, n))]
+  resample_onve &lt;- Onve_den[ceiling(runif(n, 1, n))]
+  resample_capa &lt;- Capa_den[ceiling(runif(n, 1, n))]
   
   Bootstrap_diff[i + 1] &lt;- mean(resample_onve) - mean(resample_capa)
 }
@@ -499,7 +495,7 @@ lower_diff &lt;- sort_diff[floor(0.025 * (1 + B))]
 upper_diff &lt;- sort_diff[floor(0.975 * (1 + B))]
 
 print(c(lower_diff, upper_diff))</code></pre>
-<pre><code>## [1] -35.22999 189.58968</code></pre>
+<pre><code>## [1] -39.67032 196.08633</code></pre>
 <pre class="r"><code>#if the interval contain 0, indicate that these two species have no significant difference
 if(lower_diff &gt; 0 | upper_diff &lt; 0) {
   print(&quot;the density of these two species have significant difference&quot;)
@@ -514,10 +510,12 @@ if(lower_diff &gt; 0 | upper_diff &lt; 0) {
 Z0 &lt;- qnorm(sum(Bootstrap_diff &lt; original_diff) / (B + 1))
 jackknife_diff &lt;- numeric(n)
 
+#independent test
 for(i in 1:n){
-  jackknife_onve &lt;- Onve_den[, -i]
-  jackknife_capa &lt;- Capa_den[, -i]
-  jackknife_diff[i] &lt;- mean(jackknife_onve) - mean(jackknife_capa)
+  jackknife_diff[i] &lt;- mean(Onve_den[-i]) - mean(Capa_den)
+}
+for(i in 1:n){
+  jackknife_diff[i + n] &lt;- mean(Onve_den) - mean(Capa_den[-i])
 }
 
 mean_jackknife_diff &lt;- mean(jackknife_diff)
@@ -525,10 +523,11 @@ numerator_diff &lt;- sum((mean_jackknife_diff - jackknife_diff) ^ 3)
 denominator_diff &lt;- 6 * (sum((mean_jackknife_diff - jackknife_diff) ^ 2) ^ (3/2))
 A &lt;- numerator_diff / denominator_diff
 
-lower_BCa_diff &lt;- sort(Bootstrap_diff)[floor(pnorm(Z0 + (Z0 - 1.96) / (1 - a * (Z0 - 1.96))) * (B + 1))]
-upper_BCa_diff &lt;- sort(Bootstrap_diff)[floor(pnorm(Z0 + (Z0 + 1.96) / (1 - a * (Z0 + 1.96))) * (B + 1))]
-
-#if the interval contain 0, indicate that these two species have no significant difference 
+lower_BCa_diff &lt;- sort(Bootstrap_diff)[floor(pnorm(Z0 + (Z0 - 1.96) / (1 - A * (Z0 - 1.96))) * (B + 1))]
+upper_BCa_diff &lt;- sort(Bootstrap_diff)[floor(pnorm(Z0 + (Z0 + 1.96) / (1 - A * (Z0 + 1.96))) * (B + 1))]
+print(c(lower_BCa_diff, upper_BCa_diff))</code></pre>
+<pre><code>## [1] -31.39389 209.14742</code></pre>
+<pre class="r"><code>#if the interval contain 0, indicate that these two species have no significant difference 
 if(lower_BCa_diff &gt; 0 | upper_BCa_diff &lt; 0) {
   print(&quot;the density of these two species have significant difference&quot;)
 } else {

@@ -70,14 +70,12 @@ upper_BCa <- sort_b1[floor(pnorm(z0 + (z0 + 1.96) / (1 - a * (z0 + 1.96))) * (B 
 print(c(lower_BCa, upper_BCa))
 
 #testing b1
-p_value <- 2 * min(mean(bootstrap_b1 <= 0), mean(bootstrap_b1 >= 0))
-if (p_value < 0.05){
-  print("b1 is significant different from 0")
-} else{
-  print("b1 is not significant different from 0")
+
+if(lower_BCa > 0 | upper_BCa < 0) {
+  print("b1 and 0 have significant difference")
+} else {
+  print("b1 and 0 have no significant difference")
 }
-
-
 
 #Bootstrap test whether significant difference exists between the density of Oncaea Venusta and Canthocalanus pauper.
 
@@ -107,10 +105,9 @@ original_diff <- Onve_den_mean - Capa_den_mean
 
 Bootstrap_diff <- c(original_diff, numeric(B))
 
-set.seed(111)
 for(i in 1:B){
-  resample_onve <- Onve_den[floor(runif(n, 1, n))]
-  resample_capa <- Capa_den[floor(runif(n, 1, n))]
+  resample_onve <- Onve_den[ceiling(runif(n, 1, n))]
+  resample_capa <- Capa_den[ceiling(runif(n, 1, n))]
   
   Bootstrap_diff[i + 1] <- mean(resample_onve) - mean(resample_capa)
 }
@@ -130,12 +127,13 @@ if(lower_diff > 0 | upper_diff < 0) {
 #BCa
 
 Z0 <- qnorm(sum(Bootstrap_diff < original_diff) / (B + 1))
-jackknife_diff <- numeric(n)
+jackknife_diff <- numeric(n + n)
 
 for(i in 1:n){
-  jackknife_onve <- Onve_den[, -i]
-  jackknife_capa <- Capa_den[, -i]
-  jackknife_diff[i] <- mean(jackknife_onve) - mean(jackknife_capa)
+  jackknife_diff[i] <- mean(Onve_den[-i]) - mean(Capa_den)
+}
+for(i in 1:n){
+  jackknife_diff[i + n] <- mean(Onve_den) - mean(Capa_den[-i])
 }
 
 mean_jackknife_diff <- mean(jackknife_diff)
@@ -143,8 +141,9 @@ numerator_diff <- sum((mean_jackknife_diff - jackknife_diff) ^ 3)
 denominator_diff <- 6 * (sum((mean_jackknife_diff - jackknife_diff) ^ 2) ^ (3/2))
 A <- numerator_diff / denominator_diff
 
-lower_BCa_diff <- sort(Bootstrap_diff)[floor(pnorm(Z0 + (Z0 - 1.96) / (1 - a * (Z0 - 1.96))) * (B + 1))]
-upper_BCa_diff <- sort(Bootstrap_diff)[floor(pnorm(Z0 + (Z0 + 1.96) / (1 - a * (Z0 + 1.96))) * (B + 1))]
+lower_BCa_diff <- sort(Bootstrap_diff)[floor(pnorm(Z0 + (Z0 - 1.96) / (1 - A * (Z0 - 1.96))) * (B + 1))]
+upper_BCa_diff <- sort(Bootstrap_diff)[floor(pnorm(Z0 + (Z0 + 1.96) / (1 - A * (Z0 + 1.96))) * (B + 1))]
+print(c(lower_BCa_diff, upper_BCa_diff))
 
 if(lower_BCa_diff > 0 | upper_BCa_diff < 0) {
   print("the density of these two species have significant difference")

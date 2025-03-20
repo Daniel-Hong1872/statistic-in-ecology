@@ -93,14 +93,11 @@ print(c(lower_BCa, upper_BCa))
 ## testing b1
 
 ```{r}
-# calculate the p-value of two tailed test
-# H0: b1 = 0
-# H1: b1 ≠ 0
-p_value <- 2 * min(mean(bootstrap_b1 <= 0), mean(bootstrap_b1 >= 0))
-if (p_value < 0.05){
-  print("b1 is significant different from 0")
-} else{
-  print("b1 is not significant different from 0")
+#if the confidence interval does not include 0, then b1 is significantly different from 0
+if(lower_BCa > 0 | upper_BCa < 0) {
+  print("b1 and 0 have significant difference")
+} else {
+  print("b1 and 0 have no significant difference")
 }
 ```
 
@@ -141,10 +138,9 @@ original_diff <- Onve_den_mean - Capa_den_mean
 
 Bootstrap_diff <- c(original_diff, numeric(B))
 
-set.seed(111)
 for(i in 1:B){
-  resample_onve <- Onve_den[floor(runif(n, 1, n))]
-  resample_capa <- Capa_den[floor(runif(n, 1, n))]
+  resample_onve <- Onve_den[ceiling(runif(n, 1, n))]
+  resample_capa <- Capa_den[ceiling(runif(n, 1, n))]
   
   Bootstrap_diff[i + 1] <- mean(resample_onve) - mean(resample_capa)
 }
@@ -172,10 +168,12 @@ if(lower_diff > 0 | upper_diff < 0) {
 Z0 <- qnorm(sum(Bootstrap_diff < original_diff) / (B + 1))
 jackknife_diff <- numeric(n)
 
+#independent test
 for(i in 1:n){
-  jackknife_onve <- Onve_den[, -i]
-  jackknife_capa <- Capa_den[, -i]
-  jackknife_diff[i] <- mean(jackknife_onve) - mean(jackknife_capa)
+  jackknife_diff[i] <- mean(Onve_den[-i]) - mean(Capa_den)
+}
+for(i in 1:n){
+  jackknife_diff[i + n] <- mean(Onve_den) - mean(Capa_den[-i])
 }
 
 mean_jackknife_diff <- mean(jackknife_diff)
@@ -183,8 +181,9 @@ numerator_diff <- sum((mean_jackknife_diff - jackknife_diff) ^ 3)
 denominator_diff <- 6 * (sum((mean_jackknife_diff - jackknife_diff) ^ 2) ^ (3/2))
 A <- numerator_diff / denominator_diff
 
-lower_BCa_diff <- sort(Bootstrap_diff)[floor(pnorm(Z0 + (Z0 - 1.96) / (1 - a * (Z0 - 1.96))) * (B + 1))]
-upper_BCa_diff <- sort(Bootstrap_diff)[floor(pnorm(Z0 + (Z0 + 1.96) / (1 - a * (Z0 + 1.96))) * (B + 1))]
+lower_BCa_diff <- sort(Bootstrap_diff)[floor(pnorm(Z0 + (Z0 - 1.96) / (1 - A * (Z0 - 1.96))) * (B + 1))]
+upper_BCa_diff <- sort(Bootstrap_diff)[floor(pnorm(Z0 + (Z0 + 1.96) / (1 - A * (Z0 + 1.96))) * (B + 1))]
+print(c(lower_BCa_diff, upper_BCa_diff))
 
 #if the interval contain 0, indicate that these two species have no significant difference 
 if(lower_BCa_diff > 0 | upper_BCa_diff < 0) {
