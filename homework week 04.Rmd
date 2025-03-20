@@ -150,9 +150,7 @@ lower_diff <- sort_diff[floor(0.025 * (1 + B))]
 upper_diff <- sort_diff[floor(0.975 * (1 + B))]
 
 print(c(lower_diff, upper_diff))
-```
 
-```{r}
 #if the interval contain 0, indicate that these two species have no significant difference
 if(lower_diff > 0 | upper_diff < 0) {
   print("the density of these two species have significant difference")
