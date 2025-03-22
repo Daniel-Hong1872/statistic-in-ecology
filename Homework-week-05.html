@@ -401,7 +401,7 @@ for (i in 1:n_p){
 <h3>calculate p-value</h3>
 <pre class="r"><code>p1 &lt;- 2 * min(mean(b1_null &gt;= b1), mean(b1_null &lt;= b1))
 print(paste(&quot;p-value:&quot;, p1))</code></pre>
-<pre><code>## [1] &quot;p-value: 4e-04&quot;</code></pre>
+<pre><code>## [1] &quot;p-value: 0&quot;</code></pre>
 <pre class="r"><code>if(p1 &lt; 0.05){
   print(&quot;b1 and 0 are significantly different&quot;)
 } else{
@@ -467,7 +467,7 @@ for(i in 1:n_p){
 <h3>calculate the p-value</h3>
 <pre class="r"><code>p2 &lt;- 2 * min(mean(diff_null &lt;= original_diff), mean(diff_null &gt;= original_diff))
 print(paste(&quot;p-value:&quot;, p2))</code></pre>
-<pre><code>## [1] &quot;p-value: 0.2356&quot;</code></pre>
+<pre><code>## [1] &quot;p-value: 0.2436&quot;</code></pre>
 <pre class="r"><code>if(p2 &lt; 0.05){
   print(&quot;these two species are significantly different&quot;)
 } else{
