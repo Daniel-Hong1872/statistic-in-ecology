@@ -1,0 +1,128 @@
+---
+title: "Homework week 05"
+author: "Daniel"
+date: "2025-03-22"
+output: html_document
+---
+
+# Compute the regression coefficients for fish = b0+b1*copepod
+# use randomization method to generate null distribution of b1
+# test whether b1 is significantly different from null (with randomization 5000 times). 
+# Report your p-value.
+
+```{r}
+setwd("C:/Users/dan91/Rstudio/statistic-in-ecology/stat_data")
+library(readxl)
+f_c_den <- read_excel("mock_dataTS/enviANDdensity.xls")
+fish_den <- f_c_den$`FishDensity (ind./1000m3)`
+copepod_den <- f_c_den$`CopepodDensity ind./m3)`
+```
+
+### calculate b1 of original data
+
+```{r}
+x <- cbind(1, copepod_den)
+y <- fish_den
+b <- solve(t(x) %*% x) %*% t(x) %*% y
+b1 <- b[2]
+print(b1)
+```
+
+### randomization
+
+```{r}
+n_p <- 5000
+l <- length(fish_den)
+b_null <- matrix(0, nrow = n_p, ncol = 2)
+b1_null <- numeric(n_p)
+fish_den_shuffle <- numeric(n_p)
+
+for (i in 1:n_p){
+  fish_den_shuffle <- fish_den[order(runif(l))] #make an random order of 1 to 34
+  b_null[i,] <- solve(t(x) %*% x) %*% t(x) %*% fish_den_shuffle #solve b by the shuffle one
+  b1_null[i] <- b_null[i, 2] #extract every b1 into b1_null
+}
+```
+
+### calculate p-value
+
+```{r}
+p1 <- 2 * min(mean(b1_null >= b1), mean(b1_null <= b1))
+print(paste("p-value:", p1))
+
+if(p1 < 0.05){
+  print("b1 and 0 are significantly different")
+} else{
+  print("b1 and 0 are not significantly different")
+}
+```
+
+# Randomization test whether significant difference exists between the density of Oncaea Venusta and Canthocalanus pauper. 
+# (Assume all data are independent and use all 34 stations.) 
+# Report your p-value.
+
+```{r}
+setwd("C:/Users/dan91/Rstudio/statistic-in-ecology/stat_data")
+cop_compo <- read.table("mock_dataTS/copepod_composition.txt", header = T)
+cop_den <- read.table("mock_dataTS/cop_density.txt")
+cop_sp <- read.table("mock_dataTS/copepodSPlist.txt", fill = T, sep = "\n")
+```
+
+### calculate th density of these two species
+
+```{r}
+# same as before
+row.names(cop_compo) <- cop_sp$V1
+Onve <- cop_compo["Oncaea venusta",] / 100
+Capa <- cop_compo["Canthocalanus pauper",] / 100
+
+Onve_den <- matrix(0, nrow = 1, ncol = length(cop_den$V1))
+row.names(Onve_den) <- "Oncaea venusta"
+for(i in 1:length(cop_den$V1)){
+  Onve_den[, i] <- Onve[, i] * cop_den[i,]
+}
+
+Capa_den <- matrix(0, nrow = 1, ncol = length(cop_den$V1))
+row.names(Capa_den) <- "Canthocalanus pauper"
+for(i in 1:length(cop_den$V1)){
+  Capa_den[, i] <- Capa[, i] * cop_den[i,]
+}
+```
+
+### calculate the difference of original data
+
+```{r}
+original_diff <- mean(Onve_den) - mean(Capa_den)
+print(original_diff)
+```
+
+### randomization
+
+```{r}
+L <- length(Onve_den)
+diff_null <-numeric(n_p)
+
+for(i in 1:n_p){
+  #combine two species and shuffle, then seperate into two groups
+  combine <- c(Onve_den, Capa_den) 
+  com_shuffle <- combine[order(runif(length(combine)))] #make an random order from 1 to 68
+  Onve_shuffle <- com_shuffle[1:length(Onve_den)] #first half for Onve
+  Capa_shuffle <- com_shuffle[(length(Onve_den) + 1):length(com_shuffle)] #second half for Capa
+  
+  diff_null[i] <- mean(Onve_shuffle) - mean(Capa_shuffle) #calculate the null difference
+}
+```
+
+### calculate the p-value
+
+```{r}
+p2 <- 2 * min(mean(diff_null <= original_diff), mean(diff_null >= original_diff))
+print(paste("p-value:", p2))
+
+if(p2 < 0.05){
+  print("these two species are significantly different")
+} else{
+  print("these two species are not significantly different")
+}
+```
+
