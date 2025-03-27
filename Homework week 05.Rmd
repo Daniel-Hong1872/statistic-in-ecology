@@ -48,7 +48,12 @@ for (i in 1:n_p){
 
 ```{r}
 p1 <- 2 * min(mean(b1_null >= b1), mean(b1_null <= b1))
-print(paste("p-value:", p1))
+
+if(p1 < (1/5000)){
+  print(paste("p-value < 1/5000"))
+} else{
+  print(paste("p-value:", p1))
+}
 
 if(p1 < 0.05){
   print("b1 and 0 are significantly different")
@@ -117,7 +122,12 @@ for(i in 1:n_p){
 
 ```{r}
 p2 <- 2 * min(mean(diff_null <= original_diff), mean(diff_null >= original_diff))
-print(paste("p-value:", p2))
+
+if(p2 < (1/5000)){
+  print(paste("p-value < 1/5000"))
+} else{
+  print(paste("p-value:", p2))
+}
 
 if(p2 < 0.05){
   print("these two species are significantly different")

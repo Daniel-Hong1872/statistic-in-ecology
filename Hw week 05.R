@@ -29,7 +29,12 @@ for (i in 1:n_p){
 }
 
 p1 <- 2 * min(mean(b1_null >= b1), mean(b1_null <= b1))
-print(paste("p-value:", p1))
+
+if(p1 < (1/5000)){
+  print(paste("p-value < 1/5000"))
+} else{
+  print(paste("p-value:", p1))
+}
 
 if(p1 < 0.05){
   print("b1 and 0 are significantly different")
