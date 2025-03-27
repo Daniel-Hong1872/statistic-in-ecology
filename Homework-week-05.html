@@ -391,6 +391,7 @@ b_null &lt;- matrix(0, nrow = n_p, ncol = 2)
 b1_null &lt;- numeric(n_p)
 fish_den_shuffle &lt;- numeric(n_p)
 
+set.seed(123)
 for (i in 1:n_p){
   fish_den_shuffle &lt;- fish_den[order(runif(l))] #make an random order of 1 to 34
   b_null[i,] &lt;- solve(t(x) %*% x) %*% t(x) %*% fish_den_shuffle #solve b by the shuffle one
@@ -406,7 +407,7 @@ if(p1 &lt; (1/5000)){
 } else{
   print(paste(&quot;p-value:&quot;, p1))
 }</code></pre>
-<pre><code>## [1] &quot;p-value &lt; 1/5000&quot;</code></pre>
+<pre><code>## [1] &quot;p-value: 4e-04&quot;</code></pre>
 <pre class="r"><code>if(p1 &lt; 0.05){
   print(&quot;b1 and 0 are significantly different&quot;)
 } else{
@@ -458,6 +459,7 @@ print(original_diff)</code></pre>
 <pre class="r"><code>L &lt;- length(Onve_den)
 diff_null &lt;-numeric(n_p)
 
+set.seed(123)
 for(i in 1:n_p){
   #combine two species and shuffle, then seperate into two groups
   combine &lt;- c(Onve_den, Capa_den) 
@@ -477,7 +479,7 @@ if(p2 &lt; (1/5000)){
 } else{
   print(paste(&quot;p-value:&quot;, p2))
 }</code></pre>
-<pre><code>## [1] &quot;p-value: 0.2364&quot;</code></pre>
+<pre><code>## [1] &quot;p-value: 0.238&quot;</code></pre>
 <pre class="r"><code>if(p2 &lt; 0.05){
   print(&quot;these two species are significantly different&quot;)
 } else{

@@ -22,6 +22,7 @@ b_null <- matrix(0, nrow = n_p, ncol = 2)
 b1_null <- numeric(n_p)
 fish_den_shuffle <- numeric(n_p)
 
+set.seed(123)
 for (i in 1:n_p){
   fish_den_shuffle <- fish_den[order(runif(l))]
   b_null[i,] <- solve(t(x) %*% x) %*% t(x) %*% fish_den_shuffle
