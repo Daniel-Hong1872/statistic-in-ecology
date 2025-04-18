@@ -1,0 +1,86 @@
+---
+title: "Homework week 06"
+author: "Daniel"
+date: "2025-03-31"
+output: html_document
+---
+
+# 1. Write a function to do root-finding based on Newton-Ralphson method and solve for “sin(x)/x-0.6=0”. 
+# (Note: write your own codes, set tol=0.000001, try different initial values)
+
+```{r}
+f <- function(x) sin(x) / x - 0.6 #identify target function
+df <- function(x) (cos(x) * x - sin(x)) / x ^ 2 #derivative of target function
+
+newton <- function(x0, tol = 0.000001, max = 1000) { #in this function, set up the innitial x, tolerance, and maximum trying times
+  x_old <- x0 #set x0 as the prior x
+  t <- 0 #recording the time this function has tried
+  
+  while (TRUE) { #keep doing this loop until it fit the condition
+    x_new <- x_old - f(x_old) / df(x_old) #the equation of Newton method
+    t <- t + 1
+    
+    if (abs(x_new - x_old) < tol) { #set up the tolerance
+      cat("stop at", t, "times", "\n")
+      return(x_new) #return the value and stop the loop
+    }
+    
+    if (t >= max) { #set up an insurance when t is over the maximum trying times
+      cat("over maximum time of trying") #mean that this equation has no answer
+      return(NA)
+    }
+    
+    x_old <- x_new #change the new x into old x for next loop
+  }
+}
+```
+
+```{r}
+# trying with different initial x
+newton(1)
+newton(2)
+newton(3)
+newton(4)
+newton(5)
+```
+
+# 2. Use data from Vidal (1980) and find the Belehradek’s equation for C2, C3, C4, C5 by minimizing the least square error, and set b=-2.05. 
+# Plot the data and fitted curves.
+
+```{r}
+setwd("C:/Users/dan91/Rstudio/statistic-in-ecology/stat_data")
+data <- read.table("VidalTvsDuration.txt", header=T, sep='\t')
+```
+
+```{r}
+b <- -2.05
+
+Belehradek_SSE <- function(params, T, y, b){ #set up the function we are look for
+  a <- params[1] #define as the first parameter, later will be used in optim function
+  T0 <- params[2] #define as second parameter
+  
+  y_hat <- a * (T - T0) ^ b #the Belehradek’s equation
+  sum((y- y_hat) ^ 2) #the least square error
+}
+```
+
+```{r}
+plot(NULL, xlim = c(8, 16), ylim = c(0, 30), xlab = "Temperature", ylab = "stage duration", main = "Calanus pacifics") #open up an empty plot to draw the observation values and final curves
+
+T_obs <- data$X.temperature #extract the temperature
+
+for (i in 2:ncol(data)) {
+  y_obs <- data[, i] #extract observation values at each stage
+  
+  min <- optim(c(1, 5), Belehradek_SSE, T = T_obs, y = y_obs, b = b) #use optim function to find the minimum of the square error
+  #optim will generate a list with three part: the best parameters, the mimnum SSE, convergence or not
+  a <- min$par[1] #extract the first part of optim list, the first parameter is the best a value
+  T0 <- min$par[2] #same as a value
+  
+  points(T_obs, y_obs, col = "red", pch = 16) #point out the observed value on the empty plot
+  
+  T_seq <- seq(min(T_obs), max(T_obs), length.out = 100) #generate a sequence of temperature so that the curve can be smooth
+  y_min <- a * (T_seq - T0)^b #calculate every result of the temperature sequence
+  lines(T_seq, y_min, col = "blue", lwd = 3) #draw the line on the empty plot
+}
+```
