@@ -666,6 +666,34 @@ cluster_compare</code></pre>
 ## wB           3         2          2       2
 ## wC           2         3          2       2
 ## wD           3         2          2       2</code></pre>
+<pre class="r"><code>method &lt;- c(&quot;Euclidean&quot;, &quot;Manhattan&quot;, &quot;Bray-Curtis&quot;, &quot;Jaccard&quot;)
+best_k &lt;- c(3, 3, 3, 2)
+average_silhouette &lt;- c(0.27, 0.28, 0.29, 0.44)
+compare &lt;- data.frame(method, best_k, average_silhouette)
+compare</code></pre>
+<pre><code>##        method best_k average_silhouette
+## 1   Euclidean      3               0.27
+## 2   Manhattan      3               0.28
+## 3 Bray-Curtis      3               0.29
+## 4     Jaccard      2               0.44</code></pre>
+<div id="jaccard-distance-which-considers-only-species-presence-and-absence-have-the-highest-average-silhouette-with-a-two-cluster-solution." class="section level4">
+<h4>1. Jaccard distance, which considers only species presence and
+absence, have the highest average silhouette with a two-cluster
+solution.</h4>
+</div>
+<div id="other-three-abundance-based-distances-supported-a-three-cluster-solution-with-lower-silhouette-values0.27-0.29." class="section level4">
+<h4>2. Other three abundance-based distances supported a three-cluster
+solution with lower silhouette values(0.27-0.29).</h4>
+</div>
+<div id="the-relatively-low-silhouette-scores-for-abundance-based-distances-may-indicate-that-the-community-gradients-are-continuous-rather-than-strongly-clustered." class="section level4">
+<h4>3. The relatively low silhouette scores for abundance-based
+distances may indicate that the community gradients are continuous
+rather than strongly clustered.</h4>
+</div>
+<div id="the-cluster-result-of-bray-curtis-and-manhattan-is-quite-similar-except-for-station-wc." class="section level4">
+<h4>4. The cluster result of Bray-curtis and Manhattan is quite similar,
+except for station wC.</h4>
+</div>
 </div>
 </div>
 

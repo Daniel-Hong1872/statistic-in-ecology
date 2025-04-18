@@ -214,3 +214,15 @@ cluster_compare <- data.frame(
 cluster_compare
 ```
 
+```{r}
+method <- c("Euclidean", "Manhattan", "Bray-Curtis", "Jaccard")
+best_k <- c(3, 3, 3, 2)
+average_silhouette <- c(0.27, 0.28, 0.29, 0.44)
+compare <- data.frame(method, best_k, average_silhouette)
+compare
+```
+
+#### 1. Jaccard distance, which considers only species presence and absence, have the highest average silhouette with a two-cluster solution.
+#### 2. Other three abundance-based distances supported a three-cluster solution with lower silhouette values(0.27-0.29).
+#### 3. The relatively low silhouette scores for abundance-based distances may indicate that the community gradients are continuous rather than strongly clustered.
+#### 4. The cluster result of Bray-curtis and Manhattan is quite similar, except for station wC.

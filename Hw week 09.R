@@ -184,4 +184,11 @@ cluster_compare <- data.frame(
   BrayCurtis = pam_bc_best$clustering,
   Jaccard = pam_ja_best$clustering
 )
+cluster_compare$Sample <- rownames(cluster_compare)
 cluster_compare
+
+method <- c("Euclidean", "Manhattan", "Bray-Curtis", "Jaccard")
+best_k <- c(3, 3, 3, 2)
+average_silhouette <- c(0.27, 0.28, 0.29, 0.44)
+compare <- data.frame(method, best_k, average_silhouette)
+compare
