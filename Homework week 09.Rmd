@@ -5,13 +5,13 @@ date: "2025-04-18"
 output: html_document
 ---
 
-## Use the dominant copepod species data (from HW 1). 
-## Perform cluster analysis of stations based on percent composition data of the dominant species and tell your story about these copepod data. 
-## Compare the results based on different distance measures. 
-## Compare the results based on different cluster algorithms. 
-## Determine final number of clusters and describe the differences among them.
+* Use the dominant copepod species data (from HW 1). 
+* Perform cluster analysis of stations based on percent composition data of the dominant species and tell your story about these copepod data. 
+* Compare the results based on different distance measures. 
+* Compare the results based on different cluster algorithms. 
+* Determine final number of clusters and describe the differences among them.
 
-### dominant species
+dominant species:
 ```{r}
 #same as Hw01
 setwd("C:/Users/dan91/Rstudio/statistic-in-ecology/stat_data/mock_dataTS")
@@ -36,6 +36,7 @@ as.numeric(dominant_species)
 
 dom_sp_compo <- t(cop_compo[dominant_species, ]) #exchange x-axis and y-axis to compare with different cruise station
 colnames(dom_sp_compo) <- cop_sp[dominant_species, ] #change the column names into dominant species names
+rownames(dom_sp_compo) <- colnames(cop_compo)
 ```
 
 ```{r}
@@ -43,47 +44,134 @@ library(vegan)
 library(cluster)
 ```
 
-### Comparing with four different distance measures
-#### Euclidean
+Comparing with four different distance measures
+
+1. Euclidean
 ```{r}
-dist_eu <- dist(dom_sp_compo, "euclidean") #calculate the euclidean distance
-
-sil_eu <- sapply(2:8, function(k){ #testing different k from 2 to 8
-  pam_eu <- pam(dist_eu, k) #use function pam to cluster with different k
-  pam_eu$silinfo$avg.width #giving the average silhouette width
-})
-
-par(mfrow=c(1,1))
-#plot to find the highest average silhouette width
-plot(2:8, sil_eu, type = "b",
-     xlab = "k",
-     ylab = "Average Silhouette Width",
-     main = "Euclidean")
-```
-
-```{r}
-pam_eu_best <- pam(dist_eu, k = 3) #k = 3 has the highest
-pam_eu_best$clustering #showing all stations belongs to which cluster
-
-plot(silhouette(pam_eu_best), border = NA, main = "k = 3") #plot by the best cluster number
-pam_eu_best$silinfo$avg.width #the average of all silhouette width
+dist_eu <- dist(dom_sp_compo, "euclidean")
 
 hc_eu_average <- hclust(dist_eu, "average") #use the hclust function to make hierarchical cluster by average method
 hc_eu_ward <- hclust(dist_eu, "ward.D2") #by modified ward method
 
 par(mfrow=c(1,2))
-plot(hc_eu_average, main = "Euclidean + Average") #plot the hierarchical cluster
-rect.hclust(hc_eu_average, k = 3, border = "red") #plot the best number of clusters on the hierarchical cluster
+
+plot(hc_eu_average, main = "Euclidean + Average")
+cutree(hc_eu_average, k = 8) #manually determine into 8 clusters
+rect.hclust(hc_eu_average, k = 8) #plot the number of clusters on the hierarchical cluster
 
 plot(hc_eu_ward, main = "Euclidean + Ward")
-rect.hclust(hc_eu_ward, k = 3, border = "red")
+cutree(hc_eu_ward, k = 3)
+rect.hclust(hc_eu_ward, k = 3)
 ```
 
-#### Manhattan
+2. Manhattan
 ```{r}
-#same as above
+# same as above
 dist_man <- dist(dom_sp_compo, "manhattan")
 
+hc_man_average <- hclust(dist_man, "average")
+hc_man_ward <- hclust(dist_man, "ward.D2")
+
+par(mfrow=c(1,2))
+
+plot(hc_man_average, main = "Manhattan + Average")
+cutree(hc_man_average, k = 3)
+rect.hclust(hc_man_average, k = 3)
+
+plot(hc_man_ward, main = "Manhattan + Ward")
+cutree(hc_man_ward, k = 3)
+rect.hclust(hc_man_ward, k = 3)
+```
+
+3. Bray-Crutis
+```{r}
+dist_bc <- vegdist(dom_sp_compo, "bray")
+
+hc_bc_average <- hclust(dist_bc, "average")
+hc_bc_ward <- hclust(dist_bc, "ward.D2")
+
+par(mfrow=c(1,2))
+
+plot(hc_bc_average, main = "Bray-Curtis + Average")
+cutree(hc_bc_average, k = 3)
+rect.hclust(hc_bc_average, k = 3)
+
+plot(hc_bc_ward, main = "Bray-Curtis + Ward")
+cutree(hc_bc_ward, k = 3)
+rect.hclust(hc_bc_ward, k = 3)
+```
+
+4. Jaccard
+```{r}
+dist_ja <- vegdist(dom_sp_compo, "jaccard", binary = T)
+
+hc_ja_average <- hclust(dist_ja, "average")
+hc_ja_complete <- hclust(dist_ja, "complete")
+
+par(mfrow=c(1,2))
+
+plot(hc_ja_average, main = "Jaccard + Average")
+cutree(hc_ja_average, k = 4)
+rect.hclust(hc_ja_average, k = 4)
+
+plot(hc_ja_complete, main = "Jaccard + Complete")
+cutree(hc_ja_complete, k = 4)
+rect.hclust(hc_ja_complete, k = 4)
+```
+
+```{r}
+distance <- c("Euclidean", "Manhattan", "Bray-Curtis", "Jaccard")
+k_average <- c(8, 3, 3, 4)
+k_ward <- c(3, 3, 3, NA)
+k_complete <- c(NA, NA, NA, 4)
+k_compare <- data.frame(distance, k_average, k_ward, k_complete)
+k_compare
+```
+
+Cophenetic Correlation
+```{r}
+coph_eu_average <- round(cor(cophenetic(hc_eu_average), dist_eu), 3)
+coph_eu_ward <- round(cor(cophenetic(hc_eu_ward), dist_eu), 3)
+coph_man_average <- round(cor(cophenetic(hc_man_average), dist_man), 3)
+coph_man_ward <- round(cor(cophenetic(hc_man_ward), dist_man), 3)
+coph_bc_average <- round(cor(cophenetic(hc_bc_average), dist_bc), 3)
+coph_bc_ward <- round(cor(cophenetic(hc_bc_ward), dist_bc), 3)
+coph_ja_average <- round(cor(cophenetic(hc_ja_average), dist_ja), 3)
+coph_ja_complete <- round(cor(cophenetic(hc_ja_complete), dist_ja), 3)
+```
+
+```{r}
+distance <- c("Euclidean", "Manhattan", "Bray-Curtis", "Jaccard")
+coph_average <- c(coph_eu_average, coph_man_average, coph_bc_average, coph_ja_average)
+coph_ward <- c(coph_eu_ward, coph_man_ward, coph_bc_ward, NA)
+coph_complete <- c(NA, NA, NA, coph_ja_complete)
+cop_compare <- data.frame(distance, coph_average, coph_ward, coph_complete)
+cop_compare
+```
+
+non-Hierarchical
+
+1. Euclidean
+```{r}
+sil_eu <- sapply(2:8, function(k){ #testing different k from 2 to 8
+  pam_eu <- pam(dist_eu, k)
+  pam_eu$silinfo$avg.width #showing average silhouette width of 2 clusters to 8 clusters
+})
+
+par(mfrow=c(1,1))
+plot(2:8, sil_eu, type = "b", #plot the average silhouette width to find the best number of clusters
+     xlab = "k",
+     ylab = "Average Silhouette Width",
+     main = "Euclidean")
+
+pam_eu_best <- pam(dist_eu, k = 3)
+pam_eu_best$clustering #showing all the stations belong to which cluster
+
+plot(silhouette(pam_eu_best), border = NA, main = "k = 3") #separate those stations into three clusters
+```
+
+2. Manhattan
+```{r}
 sil_man <- sapply(2:8, function(k){
   pam_man <- pam(dist_man, k)
   pam_man$silinfo$avg.width
@@ -99,23 +187,10 @@ pam_man_best <- pam(dist_man, k = 3)
 pam_man_best$clustering
 
 plot(silhouette(pam_man_best), border = NA, main = "k = 3")
-pam_man_best$silinfo$avg.width
-
-hc_man_average <- hclust(dist_man, "average")
-hc_man_ward <- hclust(dist_man, "ward.D2")
-
-par(mfrow=c(1,2))
-plot(hc_man_average, main = "Manhattan + Average")
-rect.hclust(hc_man_average, k = 3, border = "red")
-
-plot(hc_man_ward, main = "Manhattan + Ward")
-rect.hclust(hc_man_ward, k = 3, border = "red")
 ```
 
-#### Bray-Curtis
+3. Bray-Crutis
 ```{r}
-dist_bc <- vegdist(dom_sp_compo, "bray")
-
 sil_bc <- sapply(2:8, function(k){
   pam_bc <- pam(dist_bc, k)
   pam_bc$silinfo$avg.width
@@ -131,23 +206,10 @@ pam_bc_best <- pam(dist_bc, k = 3)
 pam_bc_best$clustering
 
 plot(silhouette(pam_bc_best), border = NA, main = "k = 3")
-pam_bc_best$silinfo$avg.width
-
-hc_bc_average <- hclust(dist_bc, "average")
-hc_bc_ward <- hclust(dist_bc, "ward.D2")
-
-par(mfrow=c(1,2))
-plot(hc_bc_average, main = "Bray-Curtis + Average")
-rect.hclust(hc_bc_average, k = 3, border = "red")
-
-plot(hc_bc_ward, main = "Bray-Curtis + Ward")
-rect.hclust(hc_bc_ward, k = 3, border = "red")
 ```
 
-#### Jaccard
+4. Jaccard
 ```{r}
-dist_ja <- vegdist(dom_sp_compo, "jaccard", binary = T)
-
 sil_ja <- sapply(2:8, function(k){
   pam_ja <- pam(dist_ja, k)
   pam_ja$silinfo$avg.width
@@ -163,66 +225,19 @@ pam_ja_best <- pam(dist_ja, k = 2)
 pam_ja_best$clustering
 
 plot(silhouette(pam_ja_best), border = NA, main = "k = 2")
-pam_ja_best$silinfo$avg.width
-
-hc_ja_average <- hclust(dist_ja, "average")
-hc_ja_complete <- hclust(dist_ja, "complete")
-
-par(mfrow=c(1,2))
-plot(hc_ja_average, main = "Jaccard + Average")
-rect.hclust(hc_ja_average, k = 2, border = "red")
-
-plot(hc_ja_complete, main = "Jaccard + Ward")
-rect.hclust(hc_ja_complete, k = 2, border = "red")
-```
-
-### Compare different method and result
-```{r}
-par(mfrow=c(2,4))
-plot(hc_eu_average, main = "Euclidean + Average")
-rect.hclust(hc_eu_average, k = 3, border = "red")
-
-plot(hc_eu_ward, main = "Euclidean + Ward")
-rect.hclust(hc_eu_ward, k = 3, border = "red")
-
-plot(hc_man_average, main = "Manhattan + Average")
-rect.hclust(hc_man_average, k = 3, border = "red")
-
-plot(hc_man_ward, main = "Manhattan + Ward")
-rect.hclust(hc_man_ward, k = 3, border = "red")
-
-plot(hc_bc_average, main = "Bray-Curtis + Average")
-rect.hclust(hc_bc_average, k = 3, border = "red")
-
-plot(hc_bc_ward, main = "Bray-Curtis + Ward")
-rect.hclust(hc_bc_ward, k = 3, border = "red")
-
-plot(hc_ja_average, main = "Jaccard + Average")
-rect.hclust(hc_ja_average, k = 2, border = "red")
-
-plot(hc_ja_complete, main = "Jaccard + Ward")
-rect.hclust(hc_ja_complete, k = 2, border = "red")
 ```
 
 ```{r}
-cluster_compare <- data.frame(
-  Euclidean = pam_eu_best$clustering,
-  Manhattan = pam_man_best$clustering,
-  BrayCurtis = pam_bc_best$clustering,
-  Jaccard = pam_ja_best$clustering
-)
-cluster_compare
-```
-
-```{r}
-method <- c("Euclidean", "Manhattan", "Bray-Curtis", "Jaccard")
+distance <- c("Euclidean", "Manhattan", "Bray-Curtis", "Jaccard")
 best_k <- c(3, 3, 3, 2)
 average_silhouette <- c(0.27, 0.28, 0.29, 0.44)
-compare <- data.frame(method, best_k, average_silhouette)
+compare <- data.frame(distance, best_k, average_silhouette)
 compare
 ```
 
-#### 1. Jaccard distance, which considers only species presence and absence, have the highest average silhouette with a two-cluster solution.
-#### 2. Other three abundance-based distances supported a three-cluster solution with lower silhouette values (0.27-0.29).
-#### 3. The relatively low silhouette scores for abundance-based distances may indicate that the community gradients are continuous rather than strongly clustered.
-#### 4. The cluster result of Bray-Curtis and Manhattan is quite similar, except for station wC.
+1. From k_compare, Euclidean + average linkage resulted in a chaining pattern, leading to the choice of 8 clusters, which contrasts with the more consistent 3-cluster solutions from Ward linkage across Euclidean, Manhattan, and Bray-Curtis distances.
+2. Form cop_compare, the dendrogram constructed using average linkage based on Jaccard distance most faithfully preserved the original dissimilarity structure.
+3. From "compare", Jaccard distance (binary) performed best with an average silhouette width of 0.44 when using 2 clusters.
+  + In contrast, abundance-based distances such as Bray-Curtis, Manhattan, and Euclidean all selected 3 clusters but had significantly lower silhouette values (0.27–0.29), suggesting weaker group separation.
+  + This result indicates that presence/absence differences among stations may be more important than fine-scale abundance variation in structuring the copepod community across seasons.
+
