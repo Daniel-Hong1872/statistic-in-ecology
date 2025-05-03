@@ -1,0 +1,71 @@
+---
+title: "homework week 11"
+author: "Daniel"
+date: "2025-05-03"
+output: html_document
+---
+
+Dominant species
+```{r}
+setwd("C:/Users/dan91/Rstudio/statistic-in-ecology/stat_data/mock_dataTS")
+cop_compo <- read.table("Copepod_composition.txt", header = T)
+cop_den <- read.table("Cop_density.txt")
+cop_sp <- read.table("copepodSPlist.txt", fill = T, sep = "\n")
+
+sp_den <- matrix(0, nrow = length(cop_sp$V1), ncol = length(cop_den$V1))
+for(i in 1:length(cop_sp$V1)){
+  for(j in 1:length(cop_den$V1)){
+    sp_den[i, j] <- cop_compo[i, j]/100 * cop_den[j,]
+  }
+}
+sp_den.df <- as.data.frame(sp_den)
+colnames(sp_den.df) <- colnames(cop_compo)
+rownames(sp_den.df) <- cop_sp$V1
+head(sp_den.df)
+
+dominant_sp.df <- data.frame(ifelse(cop_compo >= 5, 1, 0))
+dominant_species <- rownames(dominant_sp.df)[rowSums(dominant_sp.df) >= 1]
+
+dom_sp_compo <- t(cop_compo[dominant_species, ])
+colnames(dom_sp_compo) <- cop_sp[dominant_species, ]
+rownames(dom_sp_compo) <- colnames(cop_compo)
+dom_sp_compo.df <- as.data.frame(dom_sp_compo)
+rownames(dom_sp_compo.df)[1] <- "p1"
+```
+
+Environmental data
+```{r}
+library(readxl)
+setwd("C:/Users/dan91/Rstudio/statistic-in-ecology/stat_data/mock_dataTS")
+envi_data <- read_excel("enviANDdensity.xls")
+envi.df <- as.data.frame(envi_data)
+rownames(envi.df) <- envi_data$station #change the row names into stations' names
+envi.df$station <- NULL
+rownames(envi.df)[11:34] <- c("s18", "s19", "s20", "s22", "s23", "s25", "s27", "s29", "sA",  "sB", "sC", "sD", "sE", "sF", "sG", "w22", "w23", "w25", "w27", "w29", "wA", "wB", "wC", "wD") #make sure the names are same as dominant species data
+```
+
+Apply constrained ordination
+```{r}
+library(vegan)
+dca_y <- decorana(dom_sp_compo.df) #DCA to determine the method
+summary(dca_y) #find out the axis lengths of DCA1
+
+rda_y <- rda(dom_sp_compo.df ~ Depth + Temperature + Salinity + Fluorescence +
+               DissolvedOxygen, data = envi.df)
+cca_y <- cca(dom_sp_compo.df ~ Depth + Temperature + Salinity + Fluorescence +
+               DissolvedOxygen, data = envi.df)
+
+summary(rda_y) #compare both constrained inertia
+summary(cca_y)
+
+plot(rda_y, scaling = 1, main = "RDA (scaling 1)")
+plot(rda_y, scaling = 2, main = "RDA (scaling 2)")
+plot(cca_y, scaling = 1, main = "CCA (scaling 1)")
+plot(cca_y, scaling = 2, main = "CCA (scaling 2)")
+```
+
+1. The DCA results indicated that the length of the first axis was approximately 3.9, suggesting that both linear (RDA) and unimodal (CCA) methods should be compared using ordination plots and additional criteria.
+2. When comparing the constrained inertia between RDA and CCA, the RDA model exhibited a higher proportion of explained variation.
+3. However, the ordination diagrams showed that CCA provided better separation of the data, suggesting a clearer ecological gradient and potentially more meaningful interpretation.
+4. In the CCA scaling 1 plot, the distances among sites are well-resolved, allowing comparison of community composition differences and their alignment with environmental gradients. However, species labels are highly overlapped and difficult to interpret.
+5. In contrast, the scaling 2 plot presents clearer associations between species and environmental variables—e.g., Oithona similis aligns with the direction of increasing dissolved oxygen—yet site distribution is more cluttered, limiting its usefulness for site-based analysis.
