@@ -50,22 +50,35 @@ library(vegan)
 dca_y <- decorana(dom_sp_compo.df) #DCA to determine the method
 summary(dca_y) #find out the axis lengths of DCA1
 
-rda_y <- rda(dom_sp_compo.df ~ Depth + Temperature + Salinity + Fluorescence +
-               DissolvedOxygen, data = envi.df)
-cca_y <- cca(dom_sp_compo.df ~ Depth + Temperature + Salinity + Fluorescence +
-               DissolvedOxygen, data = envi.df)
+cop_hel <- decostand(dom_sp_compo.df, method = "hellinger") #for RDA, use hellinger method to convert original data if too many zero
+rda_y <- rda(cop_hel ~ Depth + Temperature + Salinity + Fluorescence + DissolvedOxygen, data = envi.df)
+cca_y <- cca(dom_sp_compo.df ~ Depth + Temperature + Salinity + Fluorescence + DissolvedOxygen, data = envi.df)
 
 summary(rda_y) #compare both constrained inertia
 summary(cca_y)
 
-plot(rda_y, scaling = 1, main = "RDA (scaling 1)")
-plot(rda_y, scaling = 2, main = "RDA (scaling 2)")
-plot(cca_y, scaling = 1, main = "CCA (scaling 1)")
-plot(cca_y, scaling = 2, main = "CCA (scaling 2)")
+vif.cca(rda_y) #test whether those variables have multicollinearity or not
+vif.cca(cca_y)
+
+anova(rda_y, by = "term", permutations = 999) #test whether each variable is significant or not
+anova(cca_y, by = "term", permutations = 999)
+
+#because VIF result showed that temperature and dissolved  oxygen are having high multicollinearity, so test temperature only
+rda_noDO <- rda(cop_hel ~ Depth + Temperature + Salinity + Fluorescence
+                , data = envi.df)
+cca_noDO <- cca(dom_sp_compo.df ~ Depth + Temperature + Salinity + Fluorescence
+                , data = envi.df)
+
+anova(rda_noDO, by = "term", permutations = 999)
+anova(cca_noDO, by = "term", permutations = 999)
+
+plot(rda_noDO, scaling = 1, main = "RDA (scaling 1)")
+plot(rda_noDO, scaling = 2, main = "RDA (scaling 2)")
+plot(cca_noDO, scaling = 1, main = "CCA (scaling 1)")
+plot(cca_noDO, scaling = 2, main = "CCA (scaling 2)")
 ```
 
-1. The DCA results indicated that the length of the first axis was approximately 3.9, suggesting that both linear (RDA) and unimodal (CCA) methods should be compared using ordination plots and additional criteria.
-2. When comparing the constrained inertia between RDA and CCA, the RDA model exhibited a higher proportion of explained variation.
-3. However, the ordination diagrams showed that CCA provided better separation of the data, suggesting a clearer ecological gradient and potentially more meaningful interpretation.
-4. In the CCA scaling 1 plot, the distances among sites are well-resolved, allowing comparison of community composition differences and their alignment with environmental gradients. However, species labels are highly overlapped and difficult to interpret.
-5. In contrast, the scaling 2 plot presents clearer associations between species and environmental variables—e.g., *Oithona* *similis* aligns with the direction of increasing dissolved oxygen—yet site distribution is more cluttered, limiting its usefulness for site-based analysis.
+1.	The DCA results indicated that the length of the first axis was approximately 3.9, suggesting that both linear (RDA) and unimodal (CCA) methods should be compared using ordination plots and additional criteria.
+2.	When comparing the constrained inertia between RDA and CCA, the RDA model exhibited a higher proportion of explained variation.
+3.	However, the ordination diagrams showed that CCA provided better separation of the data, suggesting a clearer ecological gradient and potentially more meaningful interpretation.
+4.	The VIF analysis indicated high multicollinearity between temperature and dissolved oxygen; therefore, dissolved oxygen was removed from the model to reduce redundancy.

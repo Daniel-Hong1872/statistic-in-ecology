@@ -39,7 +39,8 @@ library(vegan)
 dca_y <- decorana(dom_sp_compo.df)
 summary(dca_y)
 
-rda_y <- rda(dom_sp_compo.df ~ Depth + Temperature + Salinity + Fluorescence +
+cop_hel <- decostand(dom_sp_compo.df, method = "hellinger")
+rda_y <- rda(cop_hel ~ Depth + Temperature + Salinity + Fluorescence +
                DissolvedOxygen, data = envi.df)
 cca_y <- cca(dom_sp_compo.df ~ Depth + Temperature + Salinity + Fluorescence +
                DissolvedOxygen, data = envi.df)
@@ -47,9 +48,23 @@ cca_y <- cca(dom_sp_compo.df ~ Depth + Temperature + Salinity + Fluorescence +
 summary(rda_y)
 summary(cca_y)
 
-plot(rda_y, scaling = 1, main = "RDA (scaling 1)")
-plot(rda_y, scaling = 2, main = "RDA (scaling 2)")
-plot(cca_y, scaling = 1, main = "CCA (scaling 1)")
-plot(cca_y, scaling = 2, main = "CCA (scaling 2)")
+vif.cca(rda_y)
+vif.cca(cca_y)
+
+anova(rda_y, by = "term", permutations = 999)
+anova(cca_y, by = "term", permutations = 999)
+
+rda_noDO <- rda(cop_hel ~ Depth + Temperature + Salinity + Fluorescence
+                , data = envi.df)
+cca_noDO <- cca(dom_sp_compo.df ~ Depth + Temperature + Salinity + Fluorescence
+                , data = envi.df)
+
+anova(rda_noDO, by = "term", permutations = 999)
+anova(cca_noDO, by = "term", permutations = 999)
+
+plot(rda_noDO, scaling = 1, main = "RDA (scaling 1)")
+plot(rda_noDO, scaling = 2, main = "RDA (scaling 2)")
+plot(cca_noDO, scaling = 1, main = "CCA (scaling 1)")
+plot(cca_noDO, scaling = 2, main = "CCA (scaling 2)")
 
 
