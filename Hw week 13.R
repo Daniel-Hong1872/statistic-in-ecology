@@ -1,0 +1,390 @@
+setwd("C:/Users/dan91/Rstudio/statistic-in-ecology/stat_data")
+corvina <- read.csv("HW_data2.csv")
+age <- corvina$Age
+length <- corvina$Length
+
+# 1. Please estimate the model parameters (growth coefficients and sigma) 
+#of four different growth functions (von Bertalanffy ; Gompertz ; Logistic; 
+#Schnute Richards) using the MLE method for Gulf Corvina ( Cynoscion othonopterus ) ), 
+#assuming a log normal error distribution.
+
+#vbgf
+nll_vbgf <- function(par, age, length){
+  Lmax <- par[1]
+  K <- par[2]
+  t0 <- par[3]
+  sigma <- par[4]
+  
+  L <- Lmax * (1 - exp(-K * (age - t0)))
+  L[L <= 0] <- 1e-6
+  
+  n <- length(length)
+  nll_value <- n * log(sigma) + sum((log(length) - log(L)) ^ 2) / (2 * sigma ^ 2)
+  
+  return(nll_value)
+}
+
+init_vbgf  <- c(680, 0.2, 0, 0.1)
+lower_vbgf <- c(10, 0.001, -10, 0.0001)
+upper_vbgf <- c(1000, 1, 10, 10)
+
+fit_vbgf <- optim(par = init_vbgf, fn = nll_vbgf, age = age, length = length, 
+                  method = "L-BFGS-B", lower = lower_vbgf, upper = upper_vbgf)
+
+cat("NLL of VGBF = ", fit_vbgf$value, 
+    "\nL∞ = ", fit_vbgf$par[1], "\nK = ", fit_vbgf$par[2], 
+    "\nt0 = ", fit_vbgf$par[3], "\nσ ^ 2 = ", fit_vbgf$par[4] ^ 2)
+
+
+#gompertz
+nll_gom <- function(par, age, length){
+  Lmax <- par[1]
+  k2 <- par[2]
+  t0 <- par[3]
+  sigma <- par[4]
+  
+  L <- Lmax * exp(-exp(-k2 * (age - t0)))
+  L[L <= 0] <- 1e-6
+  
+  n <- length(length)
+  nll_value <- n * log(sigma) + sum((log(length) - log(L)) ^ 2) / (2 * sigma ^ 2)
+  
+  return(nll_value)
+}
+
+init_gom  <- c(850, 0.5, 0, 0.1)
+lower_gom <- c(120, 0.01, -5, 0.001)
+upper_gom <- c(880, 5, 5, 1)
+
+fit_gom <- optim(par = init_gom, fn = nll_gom, age = age, length = length, 
+                 method = "L-BFGS-B", lower = lower_gom, upper = upper_gom)
+
+cat("NLL of Gompertz = ", fit_gom$value, 
+    "\nL∞ = ", fit_gom$par[1], "\nk2 = ", fit_gom$par[2], 
+    "\nt0 = ", fit_gom$par[3], "\nσ ^ 2 = ", fit_gom$par[4] ^ 2)
+
+
+#logistic growth function
+nll_log <- function(par, age, length){
+  Lmax <- par[1]
+  k3 <- par[2]
+  t3 <- par[3]
+  sigma <- par[4]
+  
+  L <- Lmax / (1 + exp(-k3 * (age - t3)))
+  L[L <= 0] <- 1e-6
+  
+  n <- length(length)
+  nll_value <- n * log(sigma) + sum((log(length) - log(L)) ^ 2) / (2 * sigma ^ 2)
+  
+  return(nll_value)
+}
+
+init_log  <- c(850, 0.5, 1, 0.1)
+lower_log <- c(120, 0.01, -5, 0.001)
+upper_log <- c(880, 5, 5, 1)
+
+fit_log <- optim(par = init_log, fn = nll_log, age = age, length = length, 
+                 method = "L-BFGS-B", lower = lower_log, upper = upper_log)
+
+cat("NLL of Logistic Growth Function = ", fit_log$value, 
+    "\nL∞ = ", fit_log$par[1], "\nk3 = ", fit_log$par[2], 
+    "\nt3 = ", fit_log$par[3], "\nσ ^ 2 = ", fit_log$par[4] ^ 2)
+
+
+#schnute-richards
+nll_sch <- function(par, age, length){
+  Lmax <- par[1]
+  a <- par[2]
+  k4 <- par[3]
+  c <- par[4]
+  b <- par[5]
+  sigma <- par[6]
+  
+  L <- Lmax * (1 + a * exp(-k4 * age ^ c)) ^ (1 / b)
+  L[L <= 0] <- 1e-6
+  
+  n <- length(length)
+  nll_value <- n * log(sigma) + sum((log(length) - log(L)) ^ 2) / (2 * sigma ^ 2)
+  
+  return(nll_value)
+}
+
+init_sch <- c(705, 0.25, 0.1, 2.5, -0.15, 0.1)
+lower_sch <- c(680, 0.01, 0.01, 0.1, -2, 0.001)
+upper_sch <- c(1300, 10, 1, 5, 5, 1)
+
+fit_sch <- optim(par = init_sch, fn = nll_sch, age = age, length = length, 
+                 method = "L-BFGS-B", lower = lower_sch, upper = upper_sch)
+
+cat("NLL of Schnute-Richards = ", fit_sch$value, 
+    "\nL∞ = ", fit_sch$par[1], "\na = ", fit_sch$par[2],  
+    "\nk = ", fit_sch$par[3], "\nc = ", fit_sch$par[4],
+    "\nb = ", fit_sch$par[5], "\nσ ^ 2 = ", fit_sch$par[6] ^ 2)
+
+# 2. Conduct a comparison of the 95% confidence intervals 
+#for L among the four growth models 
+#bounds??? likelihood profile method
+
+#vbgf
+Lmax_vbgf_range <- seq(from = fit_vbgf$par[1] - 50,
+                  to   = fit_vbgf$par[1] + 100,
+                  length.out = 100)
+
+nll_vbgf_min <- fit_vbgf$value
+
+Lmax_vbgf_profile_nll <- numeric(length(Lmax_vbgf_range))
+
+for(i in seq_along(Lmax_vbgf_range)) {
+  Lmax_vbgf_fixed <- Lmax_vbgf_range[i]
+  
+  nll_vbgf_partial <- function(par){
+    K <- par[1]; t0 <- par[2]; sigma <- par[3]
+    L_hat <- Lmax_vbgf_fixed * (1 - exp(-K * (age - t0)))
+    L_hat[L_hat <= 0] <- 1e-6
+    n <- length(length)
+    n * log(sigma) + sum((log(length) - log(L_hat))^2) / (2 * sigma^2)
+  }
+  
+  fit_vbgf_partial <- optim(par = fit_vbgf$par[2:4],
+                       fn = nll_vbgf_partial,
+                       method = "L-BFGS-B",
+                       lower = lower_vbgf[2:4],
+                       upper = upper_vbgf[2:4])
+  
+  Lmax_vbgf_profile_nll[i] <- fit_vbgf_partial$value
+}
+
+delta_vbgf_nll <- Lmax_vbgf_profile_nll - nll_vbgf_min
+
+ci_vbgf_idx <- which(delta_vbgf_nll <= 1.92)
+
+ci_vbgf <- range(Lmax_vbgf_range[ci_vbgf_idx])
+
+cat("VBGF L∞ = ", fit_vbgf$par[1], "\n95% CI: ", ci_vbgf[1], "to", ci_vbgf[2], "\n")
+
+#gompertz
+Lmax_gom_range <- seq(from = fit_gom$par[1] - 50,
+                      to   = fit_gom$par[1] + 100,
+                      length.out = 100)
+
+nll_gom_min <- fit_gom$value
+Lmax_gom_profile_nll <- numeric(length(Lmax_gom_range))
+
+for(i in seq_along(Lmax_gom_range)) {
+  Lmax_gom_fixed <- Lmax_gom_range[i]
+  
+  nll_gom_partial <- function(par){
+    k2 <- par[1]; t0 <- par[2]; sigma <- par[3]
+    L_hat <- Lmax_gom_fixed * exp(-exp(-k2 * (age - t0)))
+    L_hat[L_hat <= 0] <- 1e-6
+    n <- length(length)
+    n * log(sigma) + sum((log(length) - log(L_hat))^2) / (2 * sigma^2)
+  }
+  
+  fit_gom_partial <- optim(par = fit_gom$par[2:4],
+                           fn = nll_gom_partial,
+                           method = "L-BFGS-B",
+                           lower = lower_gom[2:4],
+                           upper = upper_gom[2:4])
+  
+  Lmax_gom_profile_nll[i] <- fit_gom_partial$value
+}
+
+delta_gom_nll <- Lmax_gom_profile_nll - nll_gom_min
+ci_gom_idx <- which(delta_gom_nll <= 1.92)
+ci_gom <- range(Lmax_gom_range[ci_gom_idx])
+
+cat("Gompertz L∞ = ", fit_gom$par[1], "\n95% CI: ", ci_gom[1], "to", ci_gom[2], "\n")
+
+#logistic
+Lmax_log_range <- seq(from = fit_log$par[1] - 50,
+                      to   = fit_log$par[1] + 100,
+                      length.out = 100)
+
+nll_log_min <- fit_log$value
+Lmax_log_profile_nll <- numeric(length(Lmax_log_range))
+
+for(i in seq_along(Lmax_log_range)) {
+  Lmax_log_fixed <- Lmax_log_range[i]
+  
+  nll_log_partial <- function(par){
+    k3 <- par[1]; t3 <- par[2]; sigma <- par[3]
+    L_hat <- Lmax_log_fixed / (1 + exp(-k3 * (age - t3)))
+    L_hat[L_hat <= 0] <- 1e-6
+    n <- length(length)
+    n * log(sigma) + sum((log(length) - log(L_hat))^2) / (2 * sigma^2)
+  }
+  
+  fit_log_partial <- optim(par = fit_log$par[2:4],
+                           fn = nll_log_partial,
+                           method = "L-BFGS-B",
+                           lower = lower_log[2:4],
+                           upper = upper_log[2:4])
+  
+  Lmax_log_profile_nll[i] <- fit_log_partial$value
+}
+
+delta_log_nll <- Lmax_log_profile_nll - nll_log_min
+ci_log_idx <- which(delta_log_nll <= 1.92)
+ci_log <- range(Lmax_log_range[ci_log_idx])
+
+cat("Logistic L∞ = ", fit_log$par[1], "\n95% CI: ", ci_log[1], "to", ci_log[2], "\n")
+
+#schnute
+Lmax_sch_range <- seq(from = fit_sch$par[1] - 50,
+                      to   = fit_sch$par[1] + 100,
+                      length.out = 100)
+
+nll_sch_min <- fit_sch$value
+Lmax_sch_profile_nll <- numeric(length(Lmax_sch_range))
+
+for(i in seq_along(Lmax_sch_range)) {
+  Lmax_sch_fixed <- Lmax_sch_range[i]
+  
+  nll_sch_partial <- function(par){
+    a <- par[1]; k <- par[2]; c <- par[3]; b <- par[4]; sigma <- par[5]
+    L_hat <- Lmax_sch_fixed * (1 + a * exp(-k * age^c))^(1 / b)
+    L_hat[L_hat <= 0] <- 1e-6
+    n <- length(length)
+    n * log(sigma) + sum((log(length) - log(L_hat))^2) / (2 * sigma^2)
+  }
+  
+  fit_sch_partial <- optim(par = fit_sch$par[2:6],
+                           fn = nll_sch_partial,
+                           method = "L-BFGS-B",
+                           lower = lower_sch[2:6],
+                           upper = upper_sch[2:6])
+  
+  Lmax_sch_profile_nll[i] <- fit_sch_partial$value
+}
+
+delta_sch_nll <- Lmax_sch_profile_nll - nll_sch_min
+ci_sch_idx <- which(delta_sch_nll <= 1.92)
+ci_sch <- range(Lmax_sch_range[ci_sch_idx])
+
+cat("Schnute-Richards L∞ = ", fit_sch$par[1], "\n95% CI: ", ci_sch[1], "to", ci_sch[2], "\n")
+
+results_Lmax_CI <- data.frame(
+  Model = c("VBGF", "Gompertz", "Logistic", "Schnute-Richards"),
+  L_max = c(fit_vbgf$par[1],
+            fit_gom$par[1],
+            fit_log$par[1],
+            fit_sch$par[1]),
+  CI_lower = c(ci_vbgf[1],
+               ci_gom[1],
+               ci_log[1],
+               ci_sch[1]),
+  CI_upper = c(ci_vbgf[2],
+               ci_gom[2],
+               ci_log[2],
+               ci_sch[2])
+)
+
+print(results_Lmax_CI)
+
+# 3. Conduct the model selection based on the AIC and quantify
+#the plausibility of each model by using “Akaike weight (wi)
+
+n <- length(length)
+p_vbgf <- 4
+p_gom <- 4
+p_log <- 4
+p_sch <- 6
+
+#AIC
+aic_vbgf <- 2 * p_vbgf + 2 * fit_vbgf$value
+aic_gom  <- 2 * p_gom  + 2 * fit_gom$value
+aic_log  <- 2 * p_log  + 2 * fit_log$value
+aic_sch  <- 2 * p_sch  + 2 * fit_sch$value
+
+#AICc
+aicc_vbgf <- aic_vbgf + (2 * p_vbgf * (p_vbgf + 1)) / (n - p_vbgf - 1)
+aicc_gom  <- aic_gom  + (2 * p_gom  * (p_gom  + 1)) / (n - p_gom  - 1)
+aicc_log  <- aic_log  + (2 * p_log  * (p_log  + 1)) / (n - p_log  - 1)
+aicc_sch  <- aic_sch  + (2 * p_sch  * (p_sch  + 1)) / (n - p_sch  - 1)
+
+aicc_results <- data.frame(
+  Model = c("VBGF", "Gompertz", "Logistic", "Schnute-Richards"),
+  NLL = c(fit_vbgf$value, fit_gom$value, fit_log$value, fit_sch$value),
+  params = c(p_vbgf, p_gom, p_log, p_sch),
+  AICc = c(aicc_vbgf, aicc_gom, aicc_log, aicc_sch)
+)
+
+min_aicc <- min(aicc_results$AICc)
+aicc_results$delta_AICc <- aicc_results$AICc - min_aicc
+aicc_results$Weight <- round(exp(-0.5 * aicc_results$delta_AICc) / 
+                               sum(exp(-0.5 * aicc_results$delta_AICc)), 4)
+
+rownames(aicc_results) <- NULL
+
+print(aicc_results)
+
+# 4. Estimate the average model based on wi and plot all the growth curves together
+
+age_seq <- seq(0, max(age), by = 0.5)
+
+predict_vbgf <- function(age) {
+  Lmax <- fit_vbgf$par[1]
+  K <- fit_vbgf$par[2]
+  t0 <- fit_vbgf$par[3]
+  Lmax * (1 - exp(-K * (age - t0)))
+}
+
+predict_gom <- function(age) {
+  Lmax <- fit_gom$par[1]
+  k2 <- fit_gom$par[2]
+  t0 <- fit_gom$par[3]
+  Lmax * exp(-exp(-k2 * (age - t0)))
+}
+
+predict_log <- function(age) {
+  Lmax <- fit_log$par[1]
+  k3 <- fit_log$par[2]
+  t3 <- fit_log$par[3]
+  Lmax / (1 + exp(-k3 * (age - t3)))
+}
+
+predict_sch <- function(age) {
+  Lmax <- fit_sch$par[1]
+  a <- fit_sch$par[2]
+  k <- fit_sch$par[3]
+  c <- fit_sch$par[4]
+  b <- fit_sch$par[5]
+  Lmax * (1 + a * exp(-k * age ^ c)) ^ (1 / b)
+}
+
+weights <- aicc_results$Weight
+names(weights) <- aicc_results$Model
+
+L_vbgf <- predict_vbgf(age_seq)
+L_gom  <- predict_gom(age_seq)
+L_log  <- predict_log(age_seq)
+L_sch  <- predict_sch(age_seq)
+L_avg <- weights["VBGF"] * L_vbgf + weights["Gompertz"] * L_gom +
+  weights["Logistic"] * L_log + weights["Schnute-Richards"] * L_sch
+
+plot(NA, NA,
+     xlim = range(age_seq),
+     ylim = c(min(length), max(c(length, L_vbgf, L_gom, L_log, L_sch), na.rm = TRUE)),
+     xlab = "Age", ylab = "Length (mm)",
+     main = "Predicted Lengths by Models")
+
+points(age_seq, L_vbgf, col = "blue", pch = 17)
+points(age_seq, L_gom,  col = "green", pch = 18)
+points(age_seq, L_log,  col = "orange", pch = 15)
+points(age_seq, L_sch,  col = "purple", pch = 1)
+points(age, length, pch = 16, col = "grey60")
+
+lines(age_seq, L_vbgf, col = "blue")
+lines(age_seq, L_gom,  col = "green")
+lines(age_seq, L_log,  col = "orange")
+lines(age_seq, L_sch,  col = "purple")
+lines(age_seq, L_avg,  col = "red")
+
+legend("bottomright",
+       legend = c("Observrd", "VBGF", "Gompertz", "Logistic", "Schnute-Richards", "Model average"),
+       col = c("grey60", "blue", "green", "orange", "purple", "red"),
+       pch = c(16, 17, 18, 15, 1, -1),
+       lty = c(-1, 1, 1, 1, 1, 1),
+       merge = T)
