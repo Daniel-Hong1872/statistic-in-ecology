@@ -159,18 +159,6 @@ library(ggExtra)
 ```
 
 ```{r}
-# log-likelihood, same as Q1.
-log_likelihood_2 <- function(params){
-  Linf <- params[1]; K <- params[2]; t0 <- params[3]; sigma <- params[4]
-  if (any(is.na(c(Linf, K, t0, sigma)))) return(-Inf)
-  if (Linf <= 0 || K <= 0 || sigma <= 0) return(-Inf)
-  L_hat <- Linf * (1 - exp(-K * (age - t0)))
-  L_hat[L_hat <= 0] <- 1e-6
-  -sum((log(length) - log(L_hat))^2) / (2 * sigma^2) - length(length) * log(sigma)
-}
-```
-
-```{r}
 # set up prior
 mu_2 <- c(86, 0.13)
 sigma_L_2 <- 10
@@ -180,16 +168,6 @@ cov_matrix_2 <- matrix(c(
   sigma_L_2^2, rho_2 * sigma_L_2 * sigma_K_2,
   rho_2 * sigma_L_2 * sigma_K_2, sigma_K_2^2
 ), nrow = 2)
-```
-
-```{r}
-#log value of prior probability
-log_prior_2 <- function(params){
-  Linf <- params[1]; K <- params[2]; t0 <- params[3]; sigma <- params[4]
-  if (any(is.na(c(Linf, K, t0, sigma)))) return(-Inf)
-  if (t0 < -2 || t0 > 1 || sigma < 0.01 || sigma > 0.5) return(-Inf)
-  dmvnorm(c(Linf, K), mean = mu_2, sigma = cov_matrix_2, log = TRUE)
-}
 ```
 
 ```{r}
@@ -216,18 +194,34 @@ grid <- expand.grid(Linf = Linf_seq, K = K_seq) #generate the grid
 
 grid$density <- dmvnorm(grid, mean = mu_2, sigma = cov_matrix_2) #Compute the log probability density value for each combination of Linf and K
 
-#generate sample
-set.seed(123)
-prior_sample <- mvrnorm(100000, mu_2, cov_matrix_2) #generate random samples of Linf and K with mean(mu_2) and covariance matrix(cov_matrix_2)
-prior_df <- as.data.frame(prior_sample)
-colnames(prior_df) <- c("Linf", "K")
-
 ggplot(grid, aes(x = Linf, y = K, fill = density)) +
   geom_raster() +
   scale_fill_viridis_c() +
   labs(title = "Joint Prior Distribution of Linf and K",
        x = expression(L[infinity]), y = "K", fill = "Density") +
   theme_minimal(base_size = 14)
+```
+
+```{r}
+# log-likelihood, same as Q1.
+log_likelihood_2 <- function(params){
+  Linf <- params[1]; K <- params[2]; t0 <- params[3]; sigma <- params[4]
+  if (any(is.na(c(Linf, K, t0, sigma)))) return(-Inf)
+  if (Linf <= 0 || K <= 0 || sigma <= 0) return(-Inf)
+  L_hat <- Linf * (1 - exp(-K * (age - t0)))
+  L_hat[L_hat <= 0] <- 1e-6
+  -sum((log(length) - log(L_hat))^2) / (2 * sigma^2) - length(length) * log(sigma)
+}
+```
+
+```{r}
+#log value of prior probability
+log_prior_2 <- function(params){
+  Linf <- params[1]; K <- params[2]; t0 <- params[3]; sigma <- params[4]
+  if (any(is.na(c(Linf, K, t0, sigma)))) return(-Inf)
+  if (t0 < -2 || t0 > 1 || sigma < 0.01 || sigma > 0.5) return(-Inf)
+  dmvnorm(c(Linf, K), mean = mu_2, sigma = cov_matrix_2, log = TRUE)
+}
 ```
 
 ```{r}
