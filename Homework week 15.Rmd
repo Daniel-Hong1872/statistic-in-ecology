@@ -152,10 +152,8 @@ legend("bottomright", legend = c("Observed", "Median Growth",
 
 Question 2.
 ```{r}
-library(MASS)  # for mvrnorm
 library(mvtnorm)
 library(ggplot2)
-library(ggExtra)
 ```
 
 ```{r}

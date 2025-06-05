@@ -137,20 +137,8 @@ legend("bottomright", legend = c("Observed", "Median Growth",
        pt.cex = 2, bty = "n", cex = 0.9)
 
 # 2.
-library(MASS)  # for mvrnorm
 library(mvtnorm)
 library(ggplot2)
-library(ggExtra)
-
-# log-likelihood
-log_likelihood_2 <- function(params){
-  Linf <- params[1]; K <- params[2]; t0 <- params[3]; sigma <- params[4]
-  if (any(is.na(c(Linf, K, t0, sigma)))) return(-Inf)
-  if (Linf <= 0 || K <= 0 || sigma <= 0) return(-Inf)
-  L_hat <- Linf * (1 - exp(-K * (age - t0)))
-  L_hat[L_hat <= 0] <- 1e-6
-  -sum((log(length) - log(L_hat))^2) / (2 * sigma^2) - length(length) * log(sigma)
-}
 
 # prior
 mu_2 <- c(86, 0.13)
@@ -161,13 +149,6 @@ cov_matrix_2 <- matrix(c(
   sigma_L_2^2, rho_2 * sigma_L_2 * sigma_K_2,
   rho_2 * sigma_L_2 * sigma_K_2, sigma_K_2^2
 ), nrow = 2)
-
-log_prior_2 <- function(params){
-  Linf <- params[1]; K <- params[2]; t0 <- params[3]; sigma <- params[4]
-  if (any(is.na(c(Linf, K, t0, sigma)))) return(-Inf)
-  if (t0 < -2 || t0 > 1 || sigma < 0.01 || sigma > 0.5) return(-Inf)
-  dmvnorm(c(Linf, K), mean = mu_2, sigma = cov_matrix_2, log = TRUE)
-}
 
 par(mfrow = c(1, 1))
 
@@ -206,6 +187,22 @@ ggplot(grid, aes(x = Linf, y = K, fill = density)) +
        x = expression(L[infinity]), y = "K", fill = "Density") +
   theme_minimal(base_size = 14)
 
+# log-likelihood
+log_likelihood_2 <- function(params){
+  Linf <- params[1]; K <- params[2]; t0 <- params[3]; sigma <- params[4]
+  if (any(is.na(c(Linf, K, t0, sigma)))) return(-Inf)
+  if (Linf <= 0 || K <= 0 || sigma <= 0) return(-Inf)
+  L_hat <- Linf * (1 - exp(-K * (age - t0)))
+  L_hat[L_hat <= 0] <- 1e-6
+  -sum((log(length) - log(L_hat))^2) / (2 * sigma^2) - length(length) * log(sigma)
+}
+
+log_prior_2 <- function(params){
+  Linf <- params[1]; K <- params[2]; t0 <- params[3]; sigma <- params[4]
+  if (any(is.na(c(Linf, K, t0, sigma)))) return(-Inf)
+  if (t0 < -2 || t0 > 1 || sigma < 0.01 || sigma > 0.5) return(-Inf)
+  dmvnorm(c(Linf, K), mean = mu_2, sigma = cov_matrix_2, log = TRUE)
+}
 
 # MCMC
 set.seed(111)
